@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authentication
+    volumes:
+      - authentication_db:/var/lib/postgresql/data
+volumes:
+  authentication_db:
+
