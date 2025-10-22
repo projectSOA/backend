@@ -61,7 +61,6 @@ public class CustomUserDetails implements UserDetails {
         return enabled;
     }
 
-    // Additional getters
     public UUID getId() { return id; }
     public String getEmail() { return email; }
 }
