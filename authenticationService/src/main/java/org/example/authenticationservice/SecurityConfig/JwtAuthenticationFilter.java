@@ -51,19 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.validateToken(jwt, userDetails)) {
-                    // Extract roles from token or use UserDetails roles
-                    List<String> roles = jwtService.extractRoles(jwt);
-
-                    // Convert roles to GrantedAuthority objects
-                    List<GrantedAuthority> authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role))
-                            .collect(Collectors.toList());
-
+                    // Use authorities from UserDetails (loaded from database)
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
-                                    authorities  // ← ROLES ARE SET HERE
+                                    userDetails.getAuthorities()  // ← Use authorities from UserDetails
                             );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -72,5 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
         }
+
+        filterChain.doFilter(request, response);
     }
 }
