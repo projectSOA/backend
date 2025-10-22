@@ -17,8 +17,11 @@ public class SecurityConfig {
     // Inject your JWT filter
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    private final CustomUserDetailsService userDetailsService;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter , CustomUserDetailsService userDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -30,7 +33,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/api/test/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilter(jwtAuthenticationFilter);
+                .addFilter(jwtAuthenticationFilter)
+                .userDetailsService(userDetailsService);
 
 
         return http.build();
