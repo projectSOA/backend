@@ -17,14 +17,15 @@ public class Stop {
     private UUID id;
 
     @NotEmpty(message = "Route number is required")
-    private String routeNumber;
-
     @Size(max = 100, message = "Name must be at most 100 characters")
     private String name;
 
-    @Size(max = 255, message = "Description must be at most 255 characters")
-    private String description;
+    @NotNull(message = "Latitude must be specified")
+    private Double latitude;
 
-    @NotNull(message = "Active status must be specified")
-    private Boolean active;
+    @NotNull(message = "Longitude must be specified")
+    private Double longitude;
+
+    @NotNull(message = "Address must be specified")
+    private String address;
 }
