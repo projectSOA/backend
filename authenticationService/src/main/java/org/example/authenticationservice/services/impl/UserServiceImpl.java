@@ -2,9 +2,13 @@ package org.example.authenticationservice.services.impl;
 
 import lombok.AllArgsConstructor;
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
+import org.example.authenticationservice.entities.Role;
+import org.example.authenticationservice.entities.User;
+import org.example.authenticationservice.exception.EmailAlreadyExistsException;
 import org.example.authenticationservice.mappers.UserMapper;
 import org.example.authenticationservice.repository.UserRepo;
 import org.example.authenticationservice.services.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +17,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean existsByEmail(String email) {
@@ -20,10 +25,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(CreateUserRequestDTO createUserRequest) throws RuntimeException {
+    public void createUser(CreateUserRequestDTO createUserRequest, Role role)  {
         if (existsByEmail(createUserRequest.email())){
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists: " + createUserRequest.email());
         }
-        userRepo.save(userMapper.fromCreateUserRequestDTO_to_User(createUserRequest));
+        User user = userMapper.fromCreateUserRequestDTO_to_User(createUserRequest);
+        user.setRole(role);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepo.save(user);
     }
+
+
 }
