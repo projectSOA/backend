@@ -1,5 +1,8 @@
+-- mvn org.flywaydb:flyway-maven-plugin:11.15.0:repair -Dflyway.url=jdbc:postgresql://localhost:5437/trip -Dflyway.user=user -Dflyway.password=password
+
 DROP TABLE IF EXISTS route;
 DROP TABLE IF EXISTS stop;
+DROP TABLE IF EXISTS route_stop;
 
 -- Route table
 CREATE TABLE route (
@@ -17,4 +20,17 @@ CREATE TABLE stop (
       latitude DOUBLE PRECISION NOT NULL,
       longitude DOUBLE PRECISION NOT NULL,
       address VARCHAR(255) NOT NULL
+);
+
+-- RouteStop table
+CREATE TABLE route_stop (
+        id UUID PRIMARY KEY,
+        stop_order INT NOT NULL,
+        distance_from_previous INT,
+        estimated_travel_time INT,
+        far_from_start NUMERIC(10,2),
+        route_id UUID NOT NULL,
+        stop_id UUID NOT NULL,
+        CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES route(id),
+        CONSTRAINT fk_stop FOREIGN KEY (stop_id) REFERENCES stop(id)
 );
