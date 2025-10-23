@@ -1,0 +1,30 @@
+package entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.util.UUID;
+
+@Entity
+public class Stop {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @NotEmpty(message = "Route number is required")
+    private String routeNumber;
+
+    @Size(max = 100, message = "Name must be at most 100 characters")
+    private String name;
+
+    @Size(max = 255, message = "Description must be at most 255 characters")
+    private String description;
+
+    @NotNull(message = "Active status must be specified")
+    private Boolean active;
+}
