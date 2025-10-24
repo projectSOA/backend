@@ -1,5 +1,6 @@
 package entity;
 
+import enums.BusStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
