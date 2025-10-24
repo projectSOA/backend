@@ -1,13 +1,11 @@
 package entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,4 +25,10 @@ public class Route {
 
     @NotNull(message = "Active status must be specified")
     private Boolean active;
+
+    @OneToMany(mappedBy = "route",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Bus> buses;
+
+    @OneToMany(mappedBy = "route",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<RouteStop> routeStops;
 }

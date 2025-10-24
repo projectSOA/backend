@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
-public class RouteStopDetails {
+public class RouteStopDetailsDTO {
     private UUID id;
     private Integer stopOrder;
     private Integer distanceFromPrevious;

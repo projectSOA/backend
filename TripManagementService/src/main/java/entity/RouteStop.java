@@ -23,7 +23,7 @@ public class RouteStop {
     @JoinColumn(name = "route_id", nullable = false)
     private Route route;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stop_id", nullable = false)
     private Stop stop;
 

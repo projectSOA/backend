@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {BusMapper.class, RouteStopMapper.class})
 public interface RouteMapper {
 
     Route toEntity(RouteRequestDTO routeRequestDTO);
