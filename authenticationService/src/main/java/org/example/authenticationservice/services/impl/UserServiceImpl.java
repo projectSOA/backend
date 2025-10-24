@@ -2,6 +2,7 @@ package org.example.authenticationservice.services.impl;
 
 import lombok.AllArgsConstructor;
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
+import org.example.authenticationservice.dtos.UserDTO;
 import org.example.authenticationservice.entities.Role;
 import org.example.authenticationservice.entities.User;
 import org.example.authenticationservice.exception.EmailAlreadyExistsException;
@@ -33,6 +34,12 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
+    }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepo.findByEmail(email);
+        return userMapper.fromUser_to_UserDTO(user);
     }
 
 
