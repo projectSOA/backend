@@ -1,7 +1,7 @@
 package dto.route;
 
 import dto.bus.BusResponseDTO;
-import dto.routestop.RouteStopResponseDTO;
+import dto.routeStop.RouteStopResponseDTO;
 import lombok.Data;
 
 import java.util.List;
