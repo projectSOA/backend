@@ -1,26 +1,24 @@
 package org.example.notificationservice.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
-@Entity
+@Document(collection = "notifications")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id = UUID.randomUUID().toString();
 
-    private UUID routeId; // I might remove it to something more general like a json with infos
+    private Map<String, Object> notificationInfo;
 
     private String title;
 
