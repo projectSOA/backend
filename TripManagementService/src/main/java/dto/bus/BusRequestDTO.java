@@ -13,7 +13,6 @@ public class BusRequestDTO {
     @NotNull(message = "Registration number is required")
     private String registrationNumber;
 
-    private Integer capacity;
     private LocalTime startTime;
     private LocalTime endTime;
     private BusStatus busStatus;

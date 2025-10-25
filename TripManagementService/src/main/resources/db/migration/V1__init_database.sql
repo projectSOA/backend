@@ -41,7 +41,6 @@ CREATE TABLE route_stop (
 CREATE TABLE bus (
      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
      registration_number VARCHAR(255) NOT NULL,
-     capacity INTEGER,
      start_time TIME,
      end_time TIME,
      bus_status VARCHAR(50),

@@ -11,7 +11,6 @@ import java.util.UUID;
 public class BusResponseDTO {
     private UUID id;
     private String registrationNumber;
-    private Integer capacity;
     private LocalTime startTime;
     private LocalTime endTime;
     private BusStatus busStatus;
