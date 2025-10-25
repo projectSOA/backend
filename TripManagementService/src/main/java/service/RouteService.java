@@ -1,6 +1,7 @@
 package service;
 
 import dto.route.RouteRequestDTO;
+import entity.Bus;
 import entity.Route;
 import entity.RouteStop;
 import entity.Stop;
@@ -14,6 +15,9 @@ public interface RouteService {
     void deleteRoute(UUID routeId);
     Route getRouteById(UUID routeId);
     List<Route> getAllRoutes();
-    Route addStopToRoute(UUID routeId, RouteStop routeStop);
-    Route removeStopFromRoute(UUID routeId, UUID routeStopId);
+    Route addRouteStopToRoute(UUID routeId, RouteStop routeStop);
+    Route removeRouteStopFromRoute(UUID routeId, UUID routeStopId);
+    Route addBusToRoute(UUID routeId, Bus bus);
+    Route removeBusFromRoute(UUID routeId, UUID busId);
+
 }

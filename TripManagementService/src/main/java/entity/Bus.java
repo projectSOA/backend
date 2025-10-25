@@ -3,11 +3,13 @@ package entity;
 import enums.BusStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+@Data
 @Entity
 public class Bus {
     @Id

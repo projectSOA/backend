@@ -1,6 +1,7 @@
 package service.impl;
 
 import dto.route.RouteRequestDTO;
+import entity.Bus;
 import entity.Route;
 import entity.RouteStop;
 import exception.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import jakarta.transaction.Transactional;
 import mapper.RouteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import repository.BusRepository;
 import repository.RouteRepository;
 import repository.RouteStopRepository;
 import service.RouteService;
@@ -22,12 +24,14 @@ public class RouteServiceImpl implements RouteService {
     private  final RouteRepository routeRepository;
     private final RouteMapper routeMapper;
     private final RouteStopRepository routeStopRepository;
+    private final BusRepository busRepository;
 
     @Autowired
-    public RouteServiceImpl(RouteRepository routeRepository, RouteMapper routeMapper, RouteStopRepository routeStopRepository) {
+    public RouteServiceImpl(RouteRepository routeRepository, RouteMapper routeMapper, RouteStopRepository routeStopRepository, BusRepository busRepository) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.routeStopRepository = routeStopRepository;
+        this.busRepository = busRepository;
     }
 
     public Route createRoute(Route route){
@@ -55,7 +59,7 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.findAll();
     }
 
-    public Route addStopToRoute(UUID routeId, RouteStop routeStop){
+    public Route addRouteStopToRoute(UUID routeId, RouteStop routeStop){
         Route route = routeRepository.findById(routeId).orElseThrow(
                 () -> new ResourceNotFoundException("Route Not Found"));
         routeStop.setRoute(route);
@@ -63,16 +67,37 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.save(route);
     }
 
-    public Route removeStopFromRoute(UUID routeId, UUID routeStopId){
+    public Route removeRouteStopFromRoute(UUID routeId, UUID routeStopId){
         Route route = routeRepository.findById(routeId).orElseThrow(
                 () -> new ResourceNotFoundException("Route Not Found"));
         RouteStop routeStop = routeStopRepository.findById(routeStopId).orElseThrow(
                 () -> new ResourceNotFoundException("RouteStop Not Found"));
-        if(!routeStop.getRoute().getId().equals(routeStopId)){
+        if(!routeStop.getRoute().getId().equals(routeId)){
             throw new IllegalStateException("RouteStop not belong to this route");
         }
         route.getRouteStops().remove(routeStop);
         routeStop.setRoute(null);
+        return routeRepository.save(route);
+    }
+
+    public Route addBusToRoute(UUID routeId, Bus bus){
+        Route route = routeRepository.findById(routeId).orElseThrow(
+                () -> new ResourceNotFoundException("Route Not Found"));
+        bus.setRoute(route);
+        route.getBuses().add(bus);
+        return routeRepository.save(route);
+    }
+
+    public Route removeBusFromRoute(UUID routeId, UUID busId){
+        Route route = routeRepository.findById(routeId).orElseThrow(
+                () -> new ResourceNotFoundException("Route Not Found"));
+        Bus bus = busRepository.findById(busId).orElseThrow(
+                () -> new ResourceNotFoundException("Bus Not Found"));
+        if(!bus.getRoute().getId().equals(routeId)){
+            throw new IllegalStateException("Bus not belong to this route");
+        }
+        route.getBuses().remove(bus);
+        bus.setRoute(null);
         return routeRepository.save(route);
     }
 }
