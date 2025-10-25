@@ -28,6 +28,9 @@ public class Route {
     @NotNull(message = "Active status must be specified")
     private Boolean active;
 
+    @NotNull(message = "Price is required")
+    private Double price;
+
     @OneToMany(mappedBy = "route",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Bus> buses;
 

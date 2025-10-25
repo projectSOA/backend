@@ -11,7 +11,8 @@ CREATE TABLE route (
        route_number VARCHAR(255) NOT NULL,
        name VARCHAR(100),
        description VARCHAR(255),
-       active BOOLEAN NOT NULL
+       active BOOLEAN NOT NULL,
+       price DOUBLE PRECISION NOT NULL
 );
 
 -- Stop table

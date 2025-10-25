@@ -20,4 +20,7 @@ public class RouteRequestDTO {
 
     @NotNull(message = "Active status must be specified")
     private Boolean active;
+
+    @NotNull(message = "Price is required")
+    private Double price;
 }

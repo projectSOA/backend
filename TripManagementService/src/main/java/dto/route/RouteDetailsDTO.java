@@ -14,6 +14,7 @@ public class RouteDetailsDTO {
     private String name;
     private String description;
     private Boolean active;
+    private Double price;
     private List<RouteStopResponseDTO> routeStops;
     private List<BusResponseDTO> buses;
 }
