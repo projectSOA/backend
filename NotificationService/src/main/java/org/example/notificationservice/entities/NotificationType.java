@@ -1,0 +1,5 @@
+package org.example.notificationservice.entities;
+
+public enum NotificationType {
+    DELAY,PAYMENT_SUCCESS, TRIP_CANCELLATION,SUBSCRIPTION_RENEWAL,SUBSCRIPTION_EXPIRY,TICKET_PURCHASE,PAYMENT_FAILED
+}
