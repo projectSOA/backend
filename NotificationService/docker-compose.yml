@@ -5,7 +5,8 @@ services:
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: notificationDB # mongo can create a database without mentioning it here when our app interacts with it
     ports:
       - "27017:27017"
     volumes:
