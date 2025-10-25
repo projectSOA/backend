@@ -1,9 +1,7 @@
 package org.example.notificationservice.repositories;
 
 import org.example.notificationservice.entities.Notification;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.UUID;
-
-public interface NotificationRepo extends JpaRepository<Notification, UUID> {
+public interface NotificationRepo extends MongoRepository<Notification, String> {
 }
