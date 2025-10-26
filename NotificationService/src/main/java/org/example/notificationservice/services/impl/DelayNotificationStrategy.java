@@ -3,9 +3,11 @@ package org.example.notificationservice.services.impl;
 import org.example.notificationservice.dtos.NotificationDTO;
 import org.example.notificationservice.entities.NotificationType;
 import org.example.notificationservice.services.NotificationStrategy;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class DelayNotificationStrategy implements NotificationStrategy {
 
     @Override

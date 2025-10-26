@@ -4,32 +4,30 @@ import org.example.notificationservice.dtos.NotificationDTO;
 import org.example.notificationservice.entities.NotificationType;
 import org.example.notificationservice.services.NotificationStrategy;
 import org.springframework.stereotype.Component;
-
 import java.util.Map;
 
 @Component
-public class PaymentFailedStrategy implements NotificationStrategy {
-
+public class TripCancellationStrategy implements NotificationStrategy {
 
     @Override
     public void process(NotificationDTO notification) {
         Map<String, Object> info = notification.notificationInfo();
 
-        String orderId = (String) info.get("orderId");
-        Double amount = (Double) info.get("amount");
-        String reason = (String) info.get("reason");
+        String tripId = (String) info.get("tripId");
+        String route = (String) info.get("route");
+        String refundAmount = (String) info.get("refundAmount");
 
         String emailContent = String.format(
-                "Payment failed for order %s. Amount: $%.2f. Reason: %s. Please update your payment method.",
-                orderId, amount, reason
+                "Your trip %s on route %s has been cancelled. Refund of %s will be processed within 3-5 business days.",
+                tripId, route, refundAmount
         );
 
-        //sendEmail(notification.getRecipientEmail(), "Payment Failed", emailContent);
+        //sendEmail(notification.getRecipientEmail(), "Trip Cancellation", emailContent);
     }
 
     @Override
     public boolean supports(NotificationType type) {
-        return type == NotificationType.PAYMENT_FAILED;
+        return type == NotificationType.TRIP_CANCELLATION;
     }
 
     private void sendEmail(String email, String subject, String content) {
@@ -37,4 +35,5 @@ public class PaymentFailedStrategy implements NotificationStrategy {
         System.out.println("Subject: " + subject);
         System.out.println("Content: " + content);
     }
+
 }
