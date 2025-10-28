@@ -1,12 +1,10 @@
 package service.impl;
 
 import dto.stop.StopRequestDTO;
-import entity.Bus;
 import entity.Route;
 import entity.RouteStop;
 import entity.Stop;
 import exception.ResourceNotFoundException;
-import mapper.BusMapper;
 import mapper.StopMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
