@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 services:
   mongo-db:
     image: "mongo:latest"
@@ -21,6 +21,7 @@ services:
   rabbit_broker:
     image: rabbitmq:3-management
     container_name: rabbitmq_SOA_NotifService
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
