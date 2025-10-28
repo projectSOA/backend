@@ -4,6 +4,7 @@ import dto.routeStop.RouteStopRequestDTO;
 import entity.Route;
 import entity.RouteStop;
 import exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import mapper.RouteStopMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class RouteStopServiceImpl {
 
     private final RouteStopRepository routeStopRepository;

@@ -4,6 +4,7 @@ import dto.bus.BusRequestDTO;
 import entity.Bus;
 import entity.Route;
 import exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import mapper.BusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class BusServiceImpl implements BusService {
 
     private final BusRepository busRepository;

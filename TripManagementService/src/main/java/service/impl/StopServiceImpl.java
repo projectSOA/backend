@@ -5,6 +5,7 @@ import entity.Route;
 import entity.RouteStop;
 import entity.Stop;
 import exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import mapper.StopMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class StopServiceImpl implements StopService {
 
     private final StopRepository stopRepository;
