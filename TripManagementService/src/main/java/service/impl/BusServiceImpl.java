@@ -55,4 +55,8 @@ public class BusServiceImpl implements BusService {
                 () -> new ResourceNotFoundException("Route Not Found"));
         return route.getBuses();
     }
+
+    public List<Bus> getBuses(){
+        return busRepository.findAll();
+    }
 }

@@ -1,10 +1,15 @@
 package mapper;
 
+import dto.bus.BusRequestDTO;
 import dto.stop.StopDetailsDTO;
 import dto.stop.StopRequestDTO;
 import dto.stop.StopResponseDTO;
+import entity.Bus;
 import entity.Stop;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
@@ -20,4 +25,7 @@ public interface StopMapper {
     List<StopResponseDTO> toListResponseDTO(List<Stop> stops);
 
     List<StopDetailsDTO> toDetailsDTO(List<Stop> stops);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromDto(StopRequestDTO dto, @MappingTarget Stop entity);
 }

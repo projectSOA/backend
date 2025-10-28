@@ -12,5 +12,6 @@ public interface BusService {
     void deleteBus(UUID busId);
     Bus getBusById(UUID busId);
     List<Bus> getBusByRouteId(UUID routeId);
+    List<Bus> getBuses();
 
 }
