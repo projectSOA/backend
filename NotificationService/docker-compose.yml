@@ -18,6 +18,18 @@ services:
       - "6380:6379"
     volumes:
       - redis_data:/data
+  rabbit_broker:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_SOA_NotifService
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbit_mq_SOA:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: transport
+      RABBITMQ_DEFAULT_PASS: transport
 volumes:
   mongo_data:
   redis_data:
+  rabbit_mq_SOA:
