@@ -1,6 +1,7 @@
 package org.example.authenticationservice.services;
 
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
+import org.example.authenticationservice.entities.Role;
 import org.example.authenticationservice.mappers.UserMapper;
 import org.example.authenticationservice.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ public class UserServiceImplTest {
 
     @Test
     void should_return_true_because_user_exist(){
-        userService.createUser(request1);
+        userService.createUser(request1, Role.ADMIN);
 
         boolean exists = userRepo.existsByEmail(request1.email());
         assertThat(exists).isTrue();
