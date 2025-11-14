@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:18
+    container_name: subscription-db
+    environment:
+      POSTGRES_USER: subscription_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: subscription_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - subscription_data:/var/lib/postgresql/data
+    networks:
+      - subscription-network
+
+  subscription-service:
+    build: .
+    container_name: subscription-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/subscription_db
+      SPRING_DATASOURCE_USERNAME: subscription_user
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+    networks:
+      - subscription-network
+
+volumes:
+  subscription_data:
+
+networks:
+  subscription-network:
