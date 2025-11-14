@@ -1,13 +1,15 @@
 package com.example.subscription_service.dto.request;
 
 import com.example.subscription_service.enums.SubscriptionStatus;
-import com.example.subscription_service.enums.UserSubscriptionStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateSubscriptionRequest {
     private BigDecimal price;
     private Integer totalTickets;

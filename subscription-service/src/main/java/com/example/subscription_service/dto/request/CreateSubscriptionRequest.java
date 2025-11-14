@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateSubscriptionRequest {
 
     @NotNull(message = "Plan type is required")
@@ -27,10 +29,10 @@ public class CreateSubscriptionRequest {
     @Positive(message = "Validity days must be positive")
     private Integer validityDays;
 
-    private Boolean autoRenewal;
+    private Boolean autoRenewal = false;
 
     private String description;
 
-    @NotNull(message = "Status is required")
-    private SubscriptionStatus status;
+    private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
+
 }

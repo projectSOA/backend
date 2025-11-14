@@ -2,6 +2,7 @@ package com.example.subscription_service.entity;
 
 
 import com.example.subscription_service.enums.SubscriptionStatus;
+import com.example.subscription_service.enums.UserSubscriptionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class UserSubscription {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private SubscriptionStatus status;
+    private UserSubscriptionStatus status;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;

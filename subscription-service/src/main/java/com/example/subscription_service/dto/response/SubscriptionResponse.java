@@ -10,6 +10,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class SubscriptionResponse {
     private UUID id;
     private SubscriptionPlan plan;
