@@ -6,6 +6,7 @@ import com.example.subscription_service.dto.response.SubscriptionResponse;
 import com.example.subscription_service.enums.SubscriptionStatus;
 import com.example.subscription_service.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,14 @@ public class SubscriptionController {
     @GetMapping
     public ResponseEntity<List<SubscriptionResponse>> getAllSubscriptions() {
         return ResponseEntity.ok(subscriptionService.getAllSubscriptions());
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<SubscriptionResponse>> getSubscriptionsPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        return ResponseEntity.ok(subscriptionService.getSubscriptionsPage(page, size));
     }
 
     @PatchMapping("{id}/status")

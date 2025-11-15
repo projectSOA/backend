@@ -10,6 +10,9 @@ import com.example.subscription_service.repository.SubscriptionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,5 +74,12 @@ public class SubscriptionService {
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
         sub.setStatus(status);
         return SubscriptionMapper.toResponse(subscriptionRepository.save(sub));
+    }
+
+    public Page<SubscriptionResponse> getSubscriptionsPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Subscription> subscriptions = subscriptionRepository.findAll(pageable);
+
+        return subscriptions.map(SubscriptionMapper::toResponse);
     }
 }

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSubscriptionRequest {
+    private String title;
     private BigDecimal price;
     private Integer totalTickets;
     private Integer validityDays;

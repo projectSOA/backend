@@ -13,6 +13,7 @@ import java.util.UUID;
 @Builder
 public class SubscriptionResponse {
     private UUID id;
+    private String title;
     private SubscriptionPlan plan;
     private SubscriptionStatus status;
     private BigDecimal price;
@@ -20,4 +21,5 @@ public class SubscriptionResponse {
     private Integer validityDays;
     private Boolean autoRenewal;
     private String description;
+
 }

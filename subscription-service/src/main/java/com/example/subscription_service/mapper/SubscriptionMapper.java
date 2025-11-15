@@ -9,6 +9,7 @@ public class SubscriptionMapper {
 
     public static Subscription toEntity(CreateSubscriptionRequest dto) {
         Subscription subscription = new Subscription();
+        subscription.setTitle(dto.getTitle());
         subscription.setPlan(dto.getPlan());
         subscription.setStatus(dto.getStatus());
         subscription.setPrice(dto.getPrice());
@@ -22,8 +23,8 @@ public class SubscriptionMapper {
     public static SubscriptionResponse toResponse(Subscription subscription) {
         return new SubscriptionResponse(
                 subscription.getId(),
+                subscription.getTitle(),
                 subscription.getPlan(),
-                subscription.getStatus(),
                 subscription.getPrice(),
                 subscription.getTotalTickets(),
                 subscription.getValidityDays(),

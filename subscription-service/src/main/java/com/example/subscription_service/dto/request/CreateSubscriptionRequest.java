@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class CreateSubscriptionRequest {
 
+    @NotNull(message = "Title is required")
+    private String title;
+
     @NotNull(message = "Plan type is required")
     private SubscriptionPlan plan;
 

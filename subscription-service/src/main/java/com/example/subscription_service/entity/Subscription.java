@@ -18,6 +18,9 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
+    @Column(name ="title", nullable = false)
+    private String title;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "plan", nullable = false)
     private SubscriptionPlan plan;
