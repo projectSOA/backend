@@ -1,0 +1,296 @@
+openapi: 3.0.3
+info:
+  title: Ticket Management Payment API
+  description: API for processing ticket purchases and subscription purchases using Stripe
+  version: 1.0.0
+  contact:
+    name: Ticket Management Service
+    email: support@example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Payments
+    description: Payment processing operations
+
+paths:
+  /api/payments/ticket-purchase:
+    post:
+      tags:
+        - Payments
+      summary: Process ticket purchase payment
+      description: Process a payment for ticket purchase using Stripe API
+      operationId: processTicketPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketPurchaseRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Bad request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error - Payment processing failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/payments/subscription-purchase:
+    post:
+      tags:
+        - Payments
+      summary: Process subscription purchase payment
+      description: Process a payment for subscription purchase using Stripe API
+      operationId: processSubscriptionPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPurchaseRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Bad request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error - Payment processing failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/payments/{paymentId}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment by ID
+      description: Retrieve payment details by payment ID
+      operationId: getPaymentById
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: Unique identifier of the payment
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/payments/transaction/{transactionId}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment by transaction ID
+      description: Retrieve payment details by Stripe transaction ID
+      operationId: getPaymentByTransactionId
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Stripe transaction ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TicketPurchaseRequest:
+      type: object
+      required:
+        - userId
+        - routeId
+        - startStopId
+        - endStopId
+        - price
+        - paymentMethod
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user making the purchase
+        routeId:
+          type: string
+          format: uuid
+          description: ID of the route
+        startStopId:
+          type: string
+          format: uuid
+          description: ID of the starting stop
+        endStopId:
+          type: string
+          format: uuid
+          description: ID of the ending stop
+        price:
+          type: number
+          format: decimal
+          description: Price of the ticket
+          example: 25.50
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        idempotencyKey:
+          type: string
+          description: Unique key for idempotency (optional, will be generated if not provided)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        paymentMethodId:
+          type: string
+          description: ID of the payment method sent from stripe (is the identifier of the payment method info that already inserted by the user on the frontend during the checkout)
+
+    SubscriptionPurchaseRequest:
+      type: object
+      required:
+        - userId
+        - subscriptionId
+        - price
+        - method
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user making the purchase
+        subscriptionId:
+          type: string
+          format: uuid
+          description: ID of the subscription
+        price:
+          type: number
+          format: decimal
+          description: Price of the subscription
+          example: 99.99
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        idempotencyKey:
+          type: string
+          description: Unique key for idempotency (optional, will be generated if not provided)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        paymentMethodId:
+          type: string
+          description: ID of the payment method sent from stripe (is the identifier of the payment method info that already inserted by the user on the frontend during the checkout)
+
+    PaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Payment identifier
+        userId:
+          type: string
+          format: uuid
+          description: User making the payment
+        relatedId:
+          type: string
+          format: uuid
+          description: Related entity ID (ticketId or subscriptionId)
+        price:
+          type: number
+          format: decimal
+          description: Paid amount
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        transactionId:
+          type: string
+          description: Stripe transaction ID
+        paymentDate:
+          type: string
+          format: date-time
+          description: Payment date and time
+
+    PaymentMethod:
+      type: string
+      enum:
+        - CREDIT_CARD
+        - DEBIT_CARD
+        - PAYPAL
+        - MOBILE_MONEY
+      description: Payment method type
+
+    PaymentStatus:
+      type: string
+      enum:
+        - PENDING
+        - COMPLETED
+        - FAILED
+        - REFUNDED
+      description: Payment status
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+        - status
+        - path
+      properties:
+        message:
+          type: string
+          description: Error message
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+        path:
+          type: string
+          description: API path where error occurred
+
