@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/user-subscription")
+@RequestMapping("/api/v1/user-subscription")
 public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
