@@ -59,12 +59,13 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.findAll();
     }
 
-    public Route addRouteStopToRoute(UUID routeId, RouteStop routeStop){
+    public RouteStop addRouteStopToRoute(UUID routeId, RouteStop routeStop){
         Route route = routeRepository.findById(routeId).orElseThrow(
                 () -> new ResourceNotFoundException("Route Not Found"));
         routeStop.setRoute(route);
         route.getRouteStops().add(routeStop);
-        return routeRepository.save(route);
+        routeRepository.save(route);
+        return routeStop;
     }
 
     public Route removeRouteStopFromRoute(UUID routeId, UUID routeStopId){
@@ -80,12 +81,13 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.save(route);
     }
 
-    public Route addBusToRoute(UUID routeId, Bus bus){
+    public Bus addBusToRoute(UUID routeId, Bus bus){
         Route route = routeRepository.findById(routeId).orElseThrow(
                 () -> new ResourceNotFoundException("Route Not Found"));
         bus.setRoute(route);
         route.getBuses().add(bus);
-        return routeRepository.save(route);
+        routeRepository.save(route);
+        return bus;
     }
 
     public Route removeBusFromRoute(UUID routeId, UUID busId){
