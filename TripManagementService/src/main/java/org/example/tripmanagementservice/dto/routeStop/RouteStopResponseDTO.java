@@ -14,4 +14,8 @@ public class RouteStopResponseDTO {
     private BigDecimal farFromStart;
     private UUID routeId;
     private UUID stopId;
+    private String name;
+    private Double latitude;
+    private Double longitude;
+    private String address;
 }

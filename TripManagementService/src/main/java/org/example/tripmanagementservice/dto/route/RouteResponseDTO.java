@@ -12,4 +12,6 @@ public class RouteResponseDTO {
     private String description;
     private Boolean active;
     private Double price;
+    private String startStationName;
+    private String endStationName;
 }
