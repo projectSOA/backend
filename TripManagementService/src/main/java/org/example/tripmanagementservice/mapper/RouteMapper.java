@@ -4,10 +4,9 @@ import org.example.tripmanagementservice.dto.route.RouteDetailsDTO;
 import org.example.tripmanagementservice.dto.route.RouteRequestDTO;
 import org.example.tripmanagementservice.dto.route.RouteResponseDTO;
 import org.example.tripmanagementservice.entity.Route;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.example.tripmanagementservice.entity.RouteStop;
+import org.example.tripmanagementservice.entity.Stop;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -16,6 +15,8 @@ public interface RouteMapper {
 
     Route toEntity(RouteRequestDTO routeRequestDTO);
 
+    @Mapping(target="startStationName", expression="java(getStartStationName(route))")
+    @Mapping(target="endStationName", expression="java(getEndStationName(route))")
     RouteResponseDTO toResponseDto(Route route);
 
     RouteDetailsDTO toDetailsDto(Route route);
@@ -26,4 +27,15 @@ public interface RouteMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDto(RouteRequestDTO dto, @MappingTarget Route entity);
+
+    default String getStartStationName(Route route){
+        Stop start = route.getRouteStops().stream().filter((stop)->stop.getStopOrder()==0).map(RouteStop::getStop).findFirst().orElse(null);
+        return start!=null?start.getName():"";
+    }
+
+    default String getEndStationName(Route route){
+        int numberOfStations = route.getRouteStops().size();
+        Stop end = route.getRouteStops().stream().filter((stop)->stop.getStopOrder()==numberOfStations-1).map(RouteStop::getStop).findFirst().orElse(null);
+        return end!=null?end.getName():"";
+    }
 }
