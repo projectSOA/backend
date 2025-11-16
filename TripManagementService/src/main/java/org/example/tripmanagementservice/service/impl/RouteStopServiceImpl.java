@@ -6,6 +6,7 @@ import org.example.tripmanagementservice.entity.RouteStop;
 import org.example.tripmanagementservice.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.example.tripmanagementservice.mapper.RouteStopMapper;
+import org.example.tripmanagementservice.service.RouteStopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.example.tripmanagementservice.repository.RouteRepository;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class RouteStopServiceImpl {
+public class RouteStopServiceImpl implements RouteStopService {
 
     private final RouteStopRepository routeStopRepository;
     private final RouteStopMapper routeStopMapper;
