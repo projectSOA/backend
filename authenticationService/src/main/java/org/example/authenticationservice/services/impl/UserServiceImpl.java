@@ -12,6 +12,8 @@ import org.example.authenticationservice.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -40,6 +42,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByEmail(String email) {
         User user = userRepo.findByEmail(email);
         return userMapper.fromUser_to_UserDTO(user);
+    }
+
+    public void deleteUser(UUID userId){
+        userRepo.deleteById(userId);
     }
 
 
