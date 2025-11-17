@@ -6,8 +6,9 @@ import org.example.ticketmanagementservice.api.PaymentsApi;
 import org.example.ticketmanagementservice.api.model.PaymentResponse;
 import org.example.ticketmanagementservice.api.model.SubscriptionPurchaseRequest;
 import org.example.ticketmanagementservice.api.model.TicketPurchaseRequest;
+import org.example.ticketmanagementservice.api.model.TicketPurchaseResponse;
+import org.example.ticketmanagementservice.exception.PaymentProcessingException;
 import org.example.ticketmanagementservice.services.PaymentService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,14 +33,13 @@ public class PaymentController implements PaymentsApi {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> processTicketPurchase(TicketPurchaseRequest ticketPurchaseRequest) {
-        PaymentResponse response = null;
+    public ResponseEntity<TicketPurchaseResponse> processTicketPurchase(TicketPurchaseRequest ticketPurchaseRequest) {
         try {
-            response = paymentService.processTicketPurchase(ticketPurchaseRequest);
+            TicketPurchaseResponse response = paymentService.processTicketPurchase(ticketPurchaseRequest);
+            return ResponseEntity.ok(response);
         } catch (StripeException e) {
-            throw new RuntimeException(e);
+            throw new PaymentProcessingException("Payment processing failed", e);
         }
-        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class PaymentController implements PaymentsApi {
         try {
             response = paymentService.processSubscriptionPurchase(subscriptionPurchaseRequest);
         } catch (StripeException e) {
-            throw new RuntimeException(e);
+            throw new PaymentProcessingException("Payment processing failed", e);
         }
         return ResponseEntity.ok(response);
     }

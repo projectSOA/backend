@@ -3,22 +3,24 @@ package org.example.ticketmanagementservice.services;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 // Generated OpenAPI classes (available after mvn clean install)
-import org.example.ticketmanagementservice.api.model.TicketPurchaseRequest;
-import org.example.ticketmanagementservice.api.model.SubscriptionPurchaseRequest;
 import org.example.ticketmanagementservice.api.model.PaymentResponse;
+import org.example.ticketmanagementservice.api.model.SubscriptionPurchaseRequest;
+import org.example.ticketmanagementservice.api.model.TicketPurchaseRequest;
+import org.example.ticketmanagementservice.api.model.TicketPurchaseResponse;
 import org.example.ticketmanagementservice.entities.Payment;
+import org.example.ticketmanagementservice.entities.Ticket;
 import org.example.ticketmanagementservice.entities.enums.PaymentPurpose;
 import org.example.ticketmanagementservice.entities.enums.PaymentStatus;
 import org.example.ticketmanagementservice.exception.ResourceNotFoundException;
 import org.example.ticketmanagementservice.mapper.PaymentMapper;
 import org.example.ticketmanagementservice.mapper.SubscriptionPurchaseToPaymentMapper;
 import org.example.ticketmanagementservice.mapper.TicketPurchaseToPaymentMapper;
+import org.example.ticketmanagementservice.mapper.TicketApiMapper;
 import org.example.ticketmanagementservice.repositories.PaymentRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,8 @@ public class PaymentService {
     private final PaymentMapper paymentMapper;
     private final TicketPurchaseToPaymentMapper ticketPurchaseToPaymentMapper;
     private final SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper;
+    private final TicketService ticketService;
+    private final TicketApiMapper ticketApiMapper;
 
     @Value("${stripe.currency:usd}")
     private String currency;
@@ -41,12 +45,16 @@ public class PaymentService {
             PaymentRepository paymentRepository,
             PaymentMapper paymentMapper,
             TicketPurchaseToPaymentMapper ticketPurchaseToPaymentMapper,
-            SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper) {
+            SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper,
+            TicketService ticketService,
+            TicketApiMapper ticketApiMapper) {
         this.stripeService = stripeService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.ticketPurchaseToPaymentMapper = ticketPurchaseToPaymentMapper;
         this.subscriptionPurchaseToPaymentMapper = subscriptionPurchaseToPaymentMapper;
+        this.ticketService = ticketService;
+        this.ticketApiMapper = ticketApiMapper;
     }
 
     /**
@@ -57,7 +65,7 @@ public class PaymentService {
      * @throws StripeException if payment processing fails
      */
     @Transactional
-    public PaymentResponse processTicketPurchase(TicketPurchaseRequest request) throws StripeException {
+    public TicketPurchaseResponse processTicketPurchase(TicketPurchaseRequest request) throws StripeException {
         // Generate or use provided idempotency key
         String idempotencyKey = (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isEmpty())
             ? request.getIdempotencyKey()
@@ -66,7 +74,12 @@ public class PaymentService {
         // Check for idempotency
         var existingPayment = paymentRepository.findByIdempotencyKey(idempotencyKey);
         if (existingPayment.isPresent()) {
-            return paymentMapper.toPaymentResponse(existingPayment.get());
+            Payment existing = existingPayment.get();
+            if (existing.getStatus() != PaymentStatus.COMPLETED) {
+                throw new IllegalStateException("Payment not completed yet. Current status: " + existing.getStatus());
+            }
+            Ticket ticket = ticketService.getByPaymentId(existing.getId());
+            return buildTicketPurchaseResponse(paymentMapper.toPaymentResponse(existing), ticket);
         }
 
         // Map to Payment entity
@@ -129,8 +142,21 @@ public class PaymentService {
             throw e;
         }
 
-        return paymentMapper.toPaymentResponse(savedPayment);
+        if (savedPayment.getStatus() != PaymentStatus.COMPLETED) {
+            throw new IllegalStateException("Payment not completed yet. Current status: " + savedPayment.getStatus());
+        }
+
+        Ticket ticket = ticketService.createTicket(savedPayment, request);
+        PaymentResponse paymentResponse = paymentMapper.toPaymentResponse(savedPayment);
+        return buildTicketPurchaseResponse(paymentResponse, ticket);
     }
+    private TicketPurchaseResponse buildTicketPurchaseResponse(PaymentResponse paymentResponse, Ticket ticket) {
+        TicketPurchaseResponse response = new TicketPurchaseResponse();
+        response.setPayment(paymentResponse);
+        response.setTicket(ticketApiMapper.toResponse(ticket));
+        return response;
+    }
+
 
     /**
      * Process subscription purchase payment

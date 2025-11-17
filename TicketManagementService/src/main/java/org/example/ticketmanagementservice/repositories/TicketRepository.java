@@ -13,5 +13,11 @@ import java.util.UUID;
 
 public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
+    List<Ticket> findByUserId(UUID userId);
 
+    List<Ticket> findByUserIdAndStatus(UUID userId, TicketStatus status);
+
+    List<Ticket> findByStatusAndExpiresAtBefore(TicketStatus status, LocalDateTime threshold);
+
+    Optional<Ticket> findByPaymentId(UUID paymentId);
 }

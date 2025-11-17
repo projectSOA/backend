@@ -29,7 +29,7 @@ public class Ticket {
     private UUID id;
 
     @Column(name = "user_id", columnDefinition = "uuid", nullable = false)
-    private UUID userId;          // (User Service)
+    private UUID userId;          // purchaser identifier
 
     @Column(name = "route_id", columnDefinition = "uuid", nullable = false)
     private UUID routeId;         // (Route Service)
@@ -50,10 +50,37 @@ public class Ticket {
     @Column(name = "purchase_date", nullable = false)
     private LocalDateTime purchaseDate;
 
-    @Column(name = "qr_code", length = 512, nullable = false)
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+
+    @Column(name = "validated_at")
+    private LocalDateTime validatedAt;
+
+    @Column(name = "qr_code", length = 512)
     private String qrCode;        // stored token/QR payload (string)
+
+    @Column(name = "qr_code_generated_at")
+    private LocalDateTime qrCodeGeneratedAt;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
