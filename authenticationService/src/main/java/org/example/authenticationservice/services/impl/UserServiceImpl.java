@@ -48,5 +48,9 @@ public class UserServiceImpl implements UserService {
         userRepo.deleteById(userId);
     }
 
+    public UserDTO updateUser(UserDTO userDTO){
+        User user = userMapper.fromUserDTO_to_User(userDTO);
+        return userMapper.fromUser_to_UserDTO(userRepo.save(user));
+    }
 
 }

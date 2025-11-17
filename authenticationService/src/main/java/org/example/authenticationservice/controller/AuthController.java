@@ -3,6 +3,7 @@ package org.example.authenticationservice.controller;
 import lombok.AllArgsConstructor;
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
 import org.example.authenticationservice.dtos.LoginRequestDTO;
+import org.example.authenticationservice.dtos.UserDTO;
 import org.example.authenticationservice.exception.AccountNotActivatedException;
 import org.example.authenticationservice.exception.EmailAlreadyExistsException;
 import org.example.authenticationservice.services.AuthService;
@@ -62,6 +63,12 @@ public class AuthController {
     public ResponseEntity<String> deleteUser(@PathVariable UUID userId){
         userService.deleteUser(userId);
         return  ResponseEntity.ok("User deleted successfully");
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO){
+        UserDTO user = userService.updateUser(userDTO);
+        return  ResponseEntity.ok(user);
     }
 
 

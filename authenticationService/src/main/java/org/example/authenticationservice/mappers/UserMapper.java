@@ -11,4 +11,6 @@ public interface UserMapper {
     User fromCreateUserRequestDTO_to_User(CreateUserRequestDTO createUserRequestDTO);
 
     UserDTO fromUser_to_UserDTO(User user);
+
+    User fromUserDTO_to_User(UserDTO user);
 }
