@@ -1,0 +1,59 @@
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ticketdb
+    username: ticket
+    password: ticket
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # ✅ Hibernate auto-creates/updates tables for now
+    show-sql: true              # optional: shows SQL in console
+    properties:
+      hibernate:
+        format_sql: true        # format SQL nicely
+        jdbc.time_zone: UTC
+
+  # Optional logging
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+---
+# 🐳 Docker profile (if you ever run your app inside docker-compose)
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/ticketdb
+    username: ticket
+    password: ticket
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.time_zone: UTC
+
+  # 🧩 Optional: if using Spring Boot 3.1+ Docker Compose integration
+
