@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Example pom.xml configuration for a client service
+    Copy relevant parts to your service's pom.xml
+-->
+<project>
+    <properties>
+        <openapi-generator.version>7.2.0</openapi-generator.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Web for RestTemplate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <!-- OR use WebFlux for reactive -->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- OpenAPI Generator Plugin -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Update this path to where you copied payment-api.yaml -->
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/payment-api.yaml</inputSpec>
+                            
+                            <!-- Use 'java' generator for client code -->
+                            <generatorName>java</generatorName>
+                            
+                            <!-- Choose library: resttemplate, webclient, or native -->
+                            <library>resttemplate</library>
+                            
+                            <!-- Update package names to match your service -->
+                            <apiPackage>com.yourservice.client.payment.api</apiPackage>
+                            <modelPackage>com.yourservice.client.payment.model</modelPackage>
+                            <invokerPackage>com.yourservice.client.payment</invokerPackage>
+                            
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <library>resttemplate</library>
+                                <useJakartaEe>true</useJakartaEe>
+                            </configOptions>
+                            
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build Helper Plugin - Add generated sources to build path -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
