@@ -69,7 +69,6 @@ spring:
           predicates:
             - Path=/api/v1/route-stops/{routeStopId}
 
-
         - id: update-route-stop
           uri: http://localhost:8082
           predicates:
@@ -83,7 +82,9 @@ spring:
         - id: ticket
           uri: http://localhost:8083
           predicates:
-            - Path=/api/v1/
+            - Path=/api/v1/tickets/**
+            - Path=/
+
         - id: user-subscriptions
           uri: http://localhost:8084
           predicates:
