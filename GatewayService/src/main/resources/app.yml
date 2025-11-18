@@ -14,7 +14,19 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/api/v1/
-        - id: subscription
+        - id: user-subscriptions
           uri: http://localhost:8084
           predicates:
-            - Path=/api/v1/
+            - Path=/api/v1/user-subscription/**
+          filters:
+            - name: JwtAuthFilter
+              args:
+                role: PASSENGER
+        - id: managing-subscriptions
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/v1/subscriptions/**
+          filters:
+            - name: JwtAuthFilter
+              args:
+                role: MANAGER
