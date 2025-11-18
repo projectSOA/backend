@@ -1,0 +1,8 @@
+package org.example.ticketmanagementservice.exception;
+
+public class TicketValidationException extends RuntimeException {
+    public TicketValidationException(String message) {
+        super(message);
+    }
+}
+

@@ -12,6 +12,8 @@ import org.example.authenticationservice.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -42,5 +44,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.fromUser_to_UserDTO(user);
     }
 
+    public void deleteUser(UUID userId){
+        userRepo.deleteById(userId);
+    }
+
+    public UserDTO updateUser(UserDTO userDTO){
+        User user = userMapper.fromUserDTO_to_User(userDTO);
+        return userMapper.fromUser_to_UserDTO(userRepo.save(user));
+    }
 
 }
