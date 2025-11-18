@@ -33,32 +33,49 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             }
 
             token = token.substring(7);
+            final String token1 = token;
 
-            Map<String, String> body = new HashMap<>();
-            body.put("token", token);
-            if (config.role != null) {
-                body.put("role", config.role);
+            // If no role is provided, just validate the token itself
+            if (config.role == null || config.role.isEmpty()) {
+                return webClient.post()
+                        .uri("/api/v1/auth/validate-token")
+                        .bodyValue(Map.of("token", token))
+                        .retrieve()
+                        .bodyToMono(Boolean.class)
+                        .flatMap(isValid -> {
+                            if (Boolean.TRUE.equals(isValid)) {
+                                exchange.getRequest()
+                                        .mutate()
+                                        .header("X-USER-TOKEN", token1)
+                                        .build();
+                                return chain.filter(exchange);
+                            } else {
+                                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                                return exchange.getResponse().setComplete();
+                            }
+                        });
+            } else {
+                return webClient.post()
+                        .uri("/api/v1/auth/validate-role")
+                        .bodyValue(Map.of("token", token, "role", config.role))
+                        .retrieve()
+                        .bodyToMono(Boolean.class)
+                        .flatMap(isAuthorized -> {
+                            if (Boolean.TRUE.equals(isAuthorized)) {
+                                exchange.getRequest()
+                                        .mutate()
+                                        .header("X-USER-TOKEN", token1)
+                                        .build();
+                                return chain.filter(exchange);
+                            } else {
+                                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                                return exchange.getResponse().setComplete();
+                            }
+                        });
             }
-
-            return webClient.post()
-                    .uri("/api/v1/auth/validate-role")
-                    .bodyValue(body)
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .flatMap(isAuthorized -> {
-                        if (Boolean.TRUE.equals(isAuthorized)) {
-                            exchange.getRequest()
-                                    .mutate()
-                                    .header("X-USER-TOKEN", token)
-                                    .build();
-                            return chain.filter(exchange);
-                        } else {
-                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                            return exchange.getResponse().setComplete();
-                        }
-                    });
         };
     }
+
 
     public static class Config {
         private String role;
