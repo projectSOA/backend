@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user-subscription")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserSubscriptionController {
 
     private final UserSubscriptionService userSubscriptionService;
