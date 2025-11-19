@@ -8,6 +8,7 @@ import org.example.authenticationservice.entities.User;
 import org.example.authenticationservice.exception.AccountNotActivatedException;
 import org.example.authenticationservice.exception.EmailAlreadyExistsException;
 import org.example.authenticationservice.mappers.UserMapper;
+import org.example.authenticationservice.repository.UserRepo;
 import org.example.authenticationservice.services.AuthService;
 import org.example.authenticationservice.services.EmailService;
 import org.example.authenticationservice.services.UserService;
@@ -19,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,14 +36,16 @@ public class AuthController {
 
     private static final Integer PASSWORD_LENGTH = 6;
     private final SecureRandom random;
+    private UserRepo userRepo;
 
     @Autowired
-    public AuthController(UserService userService, AuthService authService, UserMapper userMapper, EmailService emailService){
+    public AuthController(UserService userService, AuthService authService, UserMapper userMapper, EmailService emailService, UserRepo userRepo){
         this.userService = userService;
         this.authService = authService;
         this.userMapper = userMapper;
         this.random = new SecureRandom();
         this.emailService = emailService;
+        this.userRepo = userRepo;
     }
     // we should add sign in and sign up , and creating user like driver only a manager can do that and an admin create a manager
 
@@ -120,6 +124,11 @@ public class AuthController {
             }
         }
         return password.toString();
+    }
+
+    @GetMapping("/drivers")
+    public ResponseEntity<List<UserDTO>> getDrivers(){
+        return ResponseEntity.ok(userService.getDrivers());
     }
 
 

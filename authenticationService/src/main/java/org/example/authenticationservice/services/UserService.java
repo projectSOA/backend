@@ -4,6 +4,7 @@ import org.example.authenticationservice.dtos.CreateUserRequestDTO;
 import org.example.authenticationservice.dtos.UserDTO;
 import org.example.authenticationservice.entities.Role;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -13,4 +14,5 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
     void deleteUser(UUID userId);
     UserDTO updateUser(UserDTO userDTO);
+    List<UserDTO> getDrivers();
 }
