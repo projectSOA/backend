@@ -1,5 +1,6 @@
 package org.example.tripmanagementservice.mapper;
 
+import org.example.tripmanagementservice.dto.stop.StationDTO;
 import org.example.tripmanagementservice.dto.stop.StopDetailsDTO;
 import org.example.tripmanagementservice.dto.stop.StopRequestDTO;
 import org.example.tripmanagementservice.dto.stop.StopResponseDTO;
@@ -17,6 +18,8 @@ public interface StopMapper {
     Stop toEntity(StopRequestDTO stopRequestDTO);
 
     StopResponseDTO toResponseDTO(Stop stop);
+
+    StationDTO toStationDTO(Stop stop);
 
     StopDetailsDTO toDetailsDTO(Stop stop);
 
