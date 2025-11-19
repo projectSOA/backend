@@ -88,6 +88,11 @@ public class AuthController {
         return  ResponseEntity.ok("User deleted successfully");
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable UUID userId){
+        return  ResponseEntity.ok(userService.getUserById(userId));
+    }
+
     @PutMapping("/")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO){
         UserDTO user = userService.updateUser(userDTO);

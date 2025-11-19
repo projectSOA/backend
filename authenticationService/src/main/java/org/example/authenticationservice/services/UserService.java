@@ -13,6 +13,7 @@ public interface UserService {
     void createUser(CreateUserRequestDTO createUserRequest, Role role) ;
     UserDTO getUserByEmail(String email);
     void deleteUser(UUID userId);
+    UserDTO getUserById(UUID userId);
     UserDTO updateUser(UserDTO userDTO);
     List<UserDTO> getDrivers();
 }

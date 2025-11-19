@@ -60,4 +60,8 @@ public class UserServiceImpl implements UserService {
         return userMapper.fromListUser_to_ListUserDTO(users);
     }
 
+    public UserDTO getUserById(UUID userId){
+        return userMapper.fromUser_to_UserDTO(userRepo.findUserById(userId));
+    }
+
 }
