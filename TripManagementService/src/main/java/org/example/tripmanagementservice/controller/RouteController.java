@@ -4,6 +4,7 @@ import org.example.tripmanagementservice.dto.bus.BusRequestDTO;
 import org.example.tripmanagementservice.dto.bus.BusResponseDTO;
 import org.example.tripmanagementservice.dto.route.RouteRequestDTO;
 import org.example.tripmanagementservice.dto.route.RouteResponseDTO;
+import org.example.tripmanagementservice.dto.route.TrajectoryDTO;
 import org.example.tripmanagementservice.dto.routeStop.RouteStopRequestDTO;
 import org.example.tripmanagementservice.dto.routeStop.RouteStopResponseDTO;
 import org.example.tripmanagementservice.entity.Bus;
@@ -13,6 +14,7 @@ import org.example.tripmanagementservice.entity.Stop;
 import org.example.tripmanagementservice.mapper.BusMapper;
 import org.example.tripmanagementservice.mapper.RouteMapper;
 import org.example.tripmanagementservice.mapper.RouteStopMapper;
+import org.example.tripmanagementservice.mapper.StopMapper;
 import org.example.tripmanagementservice.service.RouteStopService;
 import org.example.tripmanagementservice.service.StopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +35,16 @@ public class RouteController {
     private final BusMapper busMapper;
     private final RouteStopMapper routeStopMapper;
     private final StopService stopService;
+    private final StopMapper stopMapper;
 
     @Autowired
-    public RouteController(RouteService routeService, RouteMapper routeMapper, BusMapper busMapper, RouteStopMapper routeStopMapper, StopService stopService) {
+    public RouteController(RouteService routeService, RouteMapper routeMapper, BusMapper busMapper, RouteStopMapper routeStopMapper, StopService stopService, StopMapper stopMapper) {
         this.routeService = routeService;
         this.routeMapper = routeMapper;
         this.busMapper = busMapper;
         this.routeStopMapper = routeStopMapper;
         this.stopService = stopService;
+        this.stopMapper = stopMapper;
     }
 
     @GetMapping
@@ -54,6 +58,13 @@ public class RouteController {
     public ResponseEntity<RouteResponseDTO> getRoute(@PathVariable UUID routeId) {
         Route route = routeService.getRouteById(routeId);
         RouteResponseDTO routeResponseDTO = routeMapper.toResponseDto(route);
+        return ResponseEntity.ok(routeResponseDTO);
+    }
+
+    @GetMapping("/geo/{routeId}")
+    public ResponseEntity<TrajectoryDTO> getRouteForGeo(@PathVariable UUID routeId) {
+        Route route = routeService.getRouteById(routeId);
+        TrajectoryDTO routeResponseDTO = routeMapper.toTrajectoryDTO(route,stopMapper);
         return ResponseEntity.ok(routeResponseDTO);
     }
 
