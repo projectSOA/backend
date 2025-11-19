@@ -13,6 +13,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import reactor.core.Disposable;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -38,7 +39,7 @@ public class BusPositionWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void subscribeToTrajectory(WebSocketSession session, Long trajectoryId) {
+    private void subscribeToTrajectory(WebSocketSession session, UUID trajectoryId) {
         unsubscribeFromTrajectory(session);
 
         Disposable subscription = simulationService.startSimulation(trajectoryId)

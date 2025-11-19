@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -22,7 +23,7 @@ public class BusServiceClientImpl implements BusServiceClient {
     }
 
     @Override
-    public Mono<List<BusDTO>> getBusesByTrajectoryId(Long trajectoryId) {
+    public Mono<List<BusDTO>> getBusesByTrajectoryId(UUID trajectoryId) {
         return webClient.get()
                 .uri("/api/v1/routes/{trajectoryId}/buses", trajectoryId)
                 .retrieve()
@@ -31,9 +32,9 @@ public class BusServiceClientImpl implements BusServiceClient {
     }
 
     @Override
-    public Mono<TrajectoryDTO> getTrajectoryById(Long trajectoryId) {
+    public Mono<TrajectoryDTO> getTrajectoryById(UUID trajectoryId) {
         return webClient.get()
-                .uri("/api/trajectories/{id}", trajectoryId)
+                .uri("/api/v1/routes/{id}", trajectoryId)
                 .retrieve()
                 .bodyToMono(TrajectoryDTO.class);
     }

@@ -29,7 +29,7 @@ public class BusPositionSimulationServiceImpl implements BusPositionSimulationSe
     }
 
     @Override
-    public Flux<BusPositionUpdate> startSimulation(Long trajectoryId) {
+    public Flux<BusPositionUpdate> startSimulation(UUID    trajectoryId) {
         return busServiceClient.getTrajectoryById(trajectoryId)
                 .flatMapMany(trajectory ->
                         busServiceClient.getBusesByTrajectoryId(trajectoryId)
@@ -65,7 +65,7 @@ public class BusPositionSimulationServiceImpl implements BusPositionSimulationSe
     }
 
     @Override
-    public void stopSimulation(Long trajectoryId) {
+    public void stopSimulation(UUID trajectoryId) {
         busProgressMap.clear();
     }
 }
