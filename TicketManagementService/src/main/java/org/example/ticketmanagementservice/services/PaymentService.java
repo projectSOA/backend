@@ -7,6 +7,7 @@ import org.example.ticketmanagementservice.api.model.PaymentResponse;
 import org.example.ticketmanagementservice.api.model.SubscriptionPurchaseRequest;
 import org.example.ticketmanagementservice.api.model.TicketPurchaseRequest;
 import org.example.ticketmanagementservice.api.model.TicketPurchaseResponse;
+import org.example.ticketmanagementservice.dto.UserDTO;
 import org.example.ticketmanagementservice.entities.Payment;
 import org.example.ticketmanagementservice.entities.Ticket;
 import org.example.ticketmanagementservice.entities.enums.PaymentPurpose;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -38,7 +40,10 @@ public class PaymentService {
     private final SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper;
     private final TicketService ticketService;
     private final TicketApiMapper ticketApiMapper;
-    private final RestClient subscriptionServiceClient;
+    private final RestTemplate restTemplate;
+    private final EmailService emailService;
+    private final TicketPdfGenerator ticketPdfGenerator;
+
 
     @Value("${stripe.currency:usd}")
     private String currency;
@@ -50,8 +55,11 @@ public class PaymentService {
             TicketPurchaseToPaymentMapper ticketPurchaseToPaymentMapper,
             SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper,
             TicketService ticketService,
-            TicketApiMapper ticketApiMapper,
-            @Qualifier("subscriptionServiceClient") RestClient subscriptionServiceClient) {
+            RestTemplate restTemplate,
+            EmailService emailService,
+            TicketPdfGenerator ticketPdfGenerator,
+            TicketApiMapper ticketApiMapper) {
+        this.restTemplate = restTemplate;
         this.stripeService = stripeService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
@@ -59,49 +67,55 @@ public class PaymentService {
         this.subscriptionPurchaseToPaymentMapper = subscriptionPurchaseToPaymentMapper;
         this.ticketService = ticketService;
         this.ticketApiMapper = ticketApiMapper;
-        this.subscriptionServiceClient = subscriptionServiceClient;
+        this.emailService = emailService;
+        this.ticketPdfGenerator = ticketPdfGenerator;
     }
 
     /**
      * Process ticket purchase payment
-     * 
+     *
      * @param request Ticket purchase request (generated OpenAPI DTO)
      * @return PaymentResponse with payment details
      * @throws StripeException if payment processing fails
      */
     @Transactional
     public TicketPurchaseResponse processTicketPurchase(TicketPurchaseRequest request) throws StripeException {
-        // Generate or use provided idempotency key
-        String idempotencyKey = (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isEmpty())
-            ? request.getIdempotencyKey()
-            : UUID.randomUUID().toString();
 
-        // Check for idempotency
+        // --------------------------------------------------------------------
+        // 1. IDEMPOTENCY HANDLING
+        // --------------------------------------------------------------------
+        String idempotencyKey = (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isEmpty())
+                ? request.getIdempotencyKey()
+                : UUID.randomUUID().toString();
+
         var existingPayment = paymentRepository.findByIdempotencyKey(idempotencyKey);
         if (existingPayment.isPresent()) {
             Payment existing = existingPayment.get();
             if (existing.getStatus() != PaymentStatus.COMPLETED) {
                 throw new IllegalStateException("Payment not completed yet. Current status: " + existing.getStatus());
             }
-            Ticket ticket = ticketService.getByPaymentId(existing.getId());
-            return buildTicketPurchaseResponse(paymentMapper.toPaymentResponse(existing), ticket);
+            Ticket existingTicket = ticketService.getByPaymentId(existing.getId());
+            return buildTicketPurchaseResponse(paymentMapper.toPaymentResponse(existing), existingTicket);
         }
 
-        // Map to Payment entity
+        // --------------------------------------------------------------------
+        // 2. MAP REQUEST → PAYMENT ENTITY
+        // --------------------------------------------------------------------
         Payment payment = ticketPurchaseToPaymentMapper.toPayment(request);
         payment.setPaymentPurpose(PaymentPurpose.TICKET);
         payment.setStatus(PaymentStatus.PENDING);
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setIdempotencyKey(idempotencyKey); // Ensure idempotency key is always set
+        payment.setIdempotencyKey(idempotencyKey);
 
-        // Create Stripe payment intent
+        // --------------------------------------------------------------------
+        // 3. CREATE STRIPE PAYMENT INTENT
+        // --------------------------------------------------------------------
         Long amountInCents = stripeService.convertToCents(request.getPrice());
         Map<String, String> metadata = new HashMap<>();
         metadata.put("user_id", request.getUserId().toString());
         metadata.put("route_id", request.getRouteId().toString());
         metadata.put("purpose", "TICKET");
 
-        // Get payment method ID from request (if provided)
         String paymentMethodId = request.getPaymentMethodId();
 
         PaymentIntent paymentIntent = stripeService.createPaymentIntent(
@@ -112,38 +126,33 @@ public class PaymentService {
                 paymentMethodId
         );
 
-        // Update payment with Stripe transaction ID
         payment.setTransactionId(paymentIntent.getId());
-
-        // Save payment
         Payment savedPayment = paymentRepository.save(payment);
 
-        // Handle payment intent status
-        // If paymentMethodId was provided, the intent was already confirmed during creation
-        // If not, we need to confirm it separately
+        // --------------------------------------------------------------------
+        // 4. CONFIRM PAYMENT
+        // --------------------------------------------------------------------
         try {
-            PaymentIntent confirmedIntent = paymentIntent;
-            
-            // If payment method was not provided, confirm the payment intent now
+            PaymentIntent confirmed = paymentIntent;
+
             if (paymentMethodId == null || paymentMethodId.isEmpty()) {
-                confirmedIntent = stripeService.confirmPaymentIntent(paymentIntent.getId(), null);
+                confirmed = stripeService.confirmPaymentIntent(paymentIntent.getId(), null);
             }
-            // If payment method was provided, the intent is already confirmed (or requires action)
-            // Just check the status
-            
-            // Update payment status based on Stripe payment intent status
-            if ("succeeded".equals(confirmedIntent.getStatus())) {
+
+            if ("succeeded".equals(confirmed.getStatus())) {
                 savedPayment.setStatus(PaymentStatus.COMPLETED);
-            } else if ("requires_action".equals(confirmedIntent.getStatus()) || 
-                       "requires_confirmation".equals(confirmedIntent.getStatus())) {
+            } else if ("requires_action".equals(confirmed.getStatus())
+                    || "requires_confirmation".equals(confirmed.getStatus())) {
                 savedPayment.setStatus(PaymentStatus.PENDING);
             } else {
                 savedPayment.setStatus(PaymentStatus.FAILED);
             }
+
             savedPayment = paymentRepository.save(savedPayment);
+
         } catch (StripeException e) {
             savedPayment.setStatus(PaymentStatus.FAILED);
-            savedPayment = paymentRepository.save(savedPayment);
+            paymentRepository.save(savedPayment);
             throw e;
         }
 
@@ -151,10 +160,60 @@ public class PaymentService {
             throw new IllegalStateException("Payment not completed yet. Current status: " + savedPayment.getStatus());
         }
 
+        // --------------------------------------------------------------------
+        // 5. CREATE TICKET
+        // --------------------------------------------------------------------
         Ticket ticket = ticketService.createTicket(savedPayment, request);
         PaymentResponse paymentResponse = paymentMapper.toPaymentResponse(savedPayment);
-        return buildTicketPurchaseResponse(paymentResponse, ticket);
+        TicketPurchaseResponse response = buildTicketPurchaseResponse(paymentResponse, ticket);
+
+        // --------------------------------------------------------------------
+        // 6. FETCH USER FROM AUTH SERVICE + SEND PDF EMAIL (non-critical)
+        // --------------------------------------------------------------------
+        try {
+            String url = "http://localhost:8080/api/v1/auth/{userId}";
+
+            UserDTO user = restTemplate.getForObject(
+                    url,
+                    UserDTO.class,
+                    request.getUserId()
+            );
+
+            if (user != null && user.email() != null) {
+
+                // Generate Ticket PDF
+                byte[] pdfBytes = ticketPdfGenerator.generateTicketPdf(ticket);
+
+                // Email content
+                String subject = "Your Ticket (ID: " + ticket.getId() + ")";
+                String htmlBody = """
+                    <p>Hello %s,</p>
+                    <p>Thank you for your purchase. Your ticket is attached as a PDF.</p>
+                    <p>Ticket ID: <strong>%s</strong></p>
+                    <br/>
+                    <p>Have a safe trip!</p>
+                    """.formatted(user.firstName(), ticket.getId());
+
+                // Send email
+                emailService.sendTicketEmailWithPdf(
+                        user.email(),
+                        subject,
+                        htmlBody,
+                        pdfBytes,
+                        "ticket-" + ticket.getId() + ".pdf"
+                );
+            }
+        } catch (Exception e) {
+            // VERY IMPORTANT: DO NOT BREAK PAYMENT FLOW IF EMAIL FAILS
+            e.printStackTrace();
+        }
+
+        // --------------------------------------------------------------------
+        // 7. RETURN PAYMENT + TICKET
+        // --------------------------------------------------------------------
+        return response;
     }
+
     private TicketPurchaseResponse buildTicketPurchaseResponse(PaymentResponse paymentResponse, Ticket ticket) {
         TicketPurchaseResponse response = new TicketPurchaseResponse();
         response.setPayment(paymentResponse);
