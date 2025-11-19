@@ -43,6 +43,9 @@ public class PaymentService {
     private final RestTemplate restTemplate;
     private final EmailService emailService;
     private final TicketPdfGenerator ticketPdfGenerator;
+    private final RestClient subscriptionServiceClient;
+
+
 
 
     @Value("${stripe.currency:usd}")
@@ -58,7 +61,8 @@ public class PaymentService {
             RestTemplate restTemplate,
             EmailService emailService,
             TicketPdfGenerator ticketPdfGenerator,
-            TicketApiMapper ticketApiMapper) {
+            TicketApiMapper ticketApiMapper,
+            @Qualifier("subscriptionServiceClient") RestClient subscriptionServiceClient) {
         this.restTemplate = restTemplate;
         this.stripeService = stripeService;
         this.paymentRepository = paymentRepository;
@@ -69,6 +73,7 @@ public class PaymentService {
         this.ticketApiMapper = ticketApiMapper;
         this.emailService = emailService;
         this.ticketPdfGenerator = ticketPdfGenerator;
+        this.subscriptionServiceClient = subscriptionServiceClient;
     }
 
     /**
