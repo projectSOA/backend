@@ -17,9 +17,11 @@ import org.example.ticketmanagementservice.mapper.SubscriptionPurchaseToPaymentM
 import org.example.ticketmanagementservice.mapper.TicketPurchaseToPaymentMapper;
 import org.example.ticketmanagementservice.mapper.TicketApiMapper;
 import org.example.ticketmanagementservice.repositories.PaymentRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ public class PaymentService {
     private final SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper;
     private final TicketService ticketService;
     private final TicketApiMapper ticketApiMapper;
+    private final RestClient subscriptionServiceClient;
 
     @Value("${stripe.currency:usd}")
     private String currency;
@@ -47,7 +50,8 @@ public class PaymentService {
             TicketPurchaseToPaymentMapper ticketPurchaseToPaymentMapper,
             SubscriptionPurchaseToPaymentMapper subscriptionPurchaseToPaymentMapper,
             TicketService ticketService,
-            TicketApiMapper ticketApiMapper) {
+            TicketApiMapper ticketApiMapper,
+            @Qualifier("subscriptionServiceClient") RestClient subscriptionServiceClient) {
         this.stripeService = stripeService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
@@ -55,6 +59,7 @@ public class PaymentService {
         this.subscriptionPurchaseToPaymentMapper = subscriptionPurchaseToPaymentMapper;
         this.ticketService = ticketService;
         this.ticketApiMapper = ticketApiMapper;
+        this.subscriptionServiceClient = subscriptionServiceClient;
     }
 
     /**
@@ -240,6 +245,25 @@ public class PaymentService {
 
         return paymentMapper.toPaymentResponse(savedPayment);
     }
+
+    private void createUserSubscription(UUID userId, UUID subscriptionId) {
+        try {
+            Map<String, UUID> requestBody = new HashMap<>();
+            requestBody.put("userId", userId);
+            requestBody.put("subscriptionId", subscriptionId);
+
+            subscriptionServiceClient.post()
+                    .uri("/user-subscription")
+                    .body(requestBody)
+                    .retrieve()
+                    .toBodilessEntity();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error creating user subscription: " + e.getMessage(), e);
+        }
+    }
+
 
     /**
      * Get payment by ID
