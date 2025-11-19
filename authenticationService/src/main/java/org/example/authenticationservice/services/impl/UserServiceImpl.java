@@ -12,7 +12,9 @@ import org.example.authenticationservice.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -51,6 +53,11 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO){
         User user = userMapper.fromUserDTO_to_User(userDTO);
         return userMapper.fromUser_to_UserDTO(userRepo.save(user));
+    }
+
+    public List<UserDTO> getDrivers(){
+        List<User> users = userRepo.findAll().stream().filter((user)->user.getRole().name().equals("DRIVER")).collect(Collectors.toList());
+        return userMapper.fromListUser_to_ListUserDTO(users);
     }
 
 }
