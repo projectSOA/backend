@@ -33,11 +33,11 @@ paths:
               $ref: '#/components/schemas/TicketPurchaseRequest'
       responses:
         '200':
-          description: Payment processed successfully
+          description: Payment + Ticket returned successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentResponse'
+                $ref: '#/components/schemas/TicketPurchaseResponse'
         '400':
           description: Bad request - Invalid input data
           content:
@@ -155,6 +155,7 @@ paths:
 
 components:
   schemas:
+
     TicketPurchaseRequest:
       type: object
       required:
@@ -168,33 +169,24 @@ components:
         userId:
           type: string
           format: uuid
-          description: ID of the user making the purchase
         routeId:
           type: string
           format: uuid
-          description: ID of the route
         startStopId:
           type: string
           format: uuid
-          description: ID of the starting stop
         endStopId:
           type: string
           format: uuid
-          description: ID of the ending stop
         price:
           type: number
           format: decimal
-          description: Price of the ticket
-          example: 25.50
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
         idempotencyKey:
           type: string
-          description: Unique key for idempotency (optional, will be generated if not provided)
-          example: "550e8400-e29b-41d4-a716-446655440000"
         paymentMethodId:
           type: string
-          description: ID of the payment method sent from stripe (is the identifier of the payment method info that already inserted by the user on the frontend during the checkout)
 
     SubscriptionPurchaseRequest:
       type: object
@@ -207,25 +199,18 @@ components:
         userId:
           type: string
           format: uuid
-          description: ID of the user making the purchase
         subscriptionId:
           type: string
           format: uuid
-          description: ID of the subscription
         price:
           type: number
           format: decimal
-          description: Price of the subscription
-          example: 99.99
         method:
           $ref: '#/components/schemas/PaymentMethod'
         idempotencyKey:
           type: string
-          description: Unique key for idempotency (optional, will be generated if not provided)
-          example: "550e8400-e29b-41d4-a716-446655440000"
         paymentMethodId:
           type: string
-          description: ID of the payment method sent from stripe (is the identifier of the payment method info that already inserted by the user on the frontend during the checkout)
 
     PaymentResponse:
       type: object
@@ -233,30 +218,73 @@ components:
         id:
           type: string
           format: uuid
-          description: Payment identifier
         userId:
           type: string
           format: uuid
-          description: User making the payment
         relatedId:
           type: string
           format: uuid
-          description: Related entity ID (ticketId or subscriptionId)
         price:
           type: number
           format: decimal
-          description: Paid amount
         method:
           $ref: '#/components/schemas/PaymentMethod'
         status:
           $ref: '#/components/schemas/PaymentStatus'
         transactionId:
           type: string
-          description: Stripe transaction ID
         paymentDate:
           type: string
           format: date-time
-          description: Payment date and time
+
+    # NEW
+    TicketPurchaseResponse:
+      type: object
+      properties:
+        payment:
+          $ref: '#/components/schemas/PaymentResponse'
+        ticket:
+          $ref: '#/components/schemas/TicketResponse'
+
+    # NEW
+    TicketResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        routeId:
+          type: string
+          format: uuid
+        startStopId:
+          type: string
+          format: uuid
+        endStopId:
+          type: string
+          format: uuid
+        price:
+          type: number
+        status:
+          type: string
+        purchaseDate:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        validatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        qrCode:
+          type: string
+          nullable: true
+        paymentId:
+          type: string
+          format: uuid
 
     PaymentMethod:
       type: string
@@ -265,7 +293,6 @@ components:
         - DEBIT_CARD
         - PAYPAL
         - MOBILE_MONEY
-      description: Payment method type
 
     PaymentStatus:
       type: string
@@ -274,7 +301,6 @@ components:
         - COMPLETED
         - FAILED
         - REFUNDED
-      description: Payment status
 
     ErrorResponse:
       type: object
@@ -285,12 +311,7 @@ components:
       properties:
         message:
           type: string
-          description: Error message
         status:
           type: integer
-          format: int32
-          description: HTTP status code
         path:
           type: string
-          description: API path where error occurred
-
