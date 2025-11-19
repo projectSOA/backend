@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class BusPositionSimulationServiceImpl implements BusPositionSimulationSe
 
     private final BusServiceClient busServiceClient;
     private final PositionGeneratorService positionGenerator;
-    private final Map<Long, Double> busProgressMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Double> busProgressMap = new ConcurrentHashMap<>();
 
     public BusPositionSimulationServiceImpl(BusServiceClient busServiceClient,
                                             PositionGeneratorService positionGenerator) {

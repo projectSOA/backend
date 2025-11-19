@@ -17,14 +17,14 @@ public class BusServiceClientImpl implements BusServiceClient {
 
     public BusServiceClientImpl() {
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8083")
+                .baseUrl("http://localhost:8082")
                 .build();
     }
 
     @Override
     public Mono<List<BusDTO>> getBusesByTrajectoryId(Long trajectoryId) {
         return webClient.get()
-                .uri("/api/buses/trajectory/{trajectoryId}", trajectoryId)
+                .uri("/api/v1/routes/{trajectoryId}/buses", trajectoryId)
                 .retrieve()
                 .bodyToFlux(BusDTO.class)
                 .collectList();

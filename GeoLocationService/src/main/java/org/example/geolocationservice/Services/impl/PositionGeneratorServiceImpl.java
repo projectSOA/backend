@@ -37,9 +37,9 @@ public class PositionGeneratorServiceImpl implements PositionGeneratorService {
         }
 
         return new BusPositionUpdate(
-                bus.trajectoryId(),
+                bus.routeId(),
                 bus.id(),
-                bus.busNumber(),
+                bus.registrationNumber(),
                 position,
                 speed,
                 Instant.now().toString(),

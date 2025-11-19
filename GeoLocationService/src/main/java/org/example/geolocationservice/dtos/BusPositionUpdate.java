@@ -1,8 +1,10 @@
 package org.example.geolocationservice.dtos;
 
+import java.util.UUID;
+
 public record BusPositionUpdate(
-        Long trajectoryId,
-        Long busId,
+        UUID trajectoryId,
+        UUID busId,
         String busNumber,
         Position position,
         Double speed,
