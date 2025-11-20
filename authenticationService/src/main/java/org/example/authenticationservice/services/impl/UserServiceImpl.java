@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(CreateUserRequestDTO createUserRequest, Role role)  {
+    public UserDTO createUser(CreateUserRequestDTO createUserRequest, Role role)  {
         if (existsByEmail(createUserRequest.email())){
             throw new EmailAlreadyExistsException("Email already exists: " + createUserRequest.email());
         }
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         user.setAccountActivated(false);
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepo.save(user);
+        return userMapper. fromUser_to_UserDTO(userRepo.save(user));
     }
 
     @Override

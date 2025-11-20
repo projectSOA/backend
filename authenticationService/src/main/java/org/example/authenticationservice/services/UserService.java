@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface UserService {
 
     boolean existsByEmail(String email);
-    void createUser(CreateUserRequestDTO createUserRequest, Role role) ;
+    UserDTO createUser(CreateUserRequestDTO createUserRequest, Role role) ;
     UserDTO getUserByEmail(String email);
     void deleteUser(UUID userId);
     UserDTO getUserById(UUID userId);

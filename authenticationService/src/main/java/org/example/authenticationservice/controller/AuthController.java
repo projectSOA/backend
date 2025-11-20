@@ -109,6 +109,7 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe(Authentication authentication){
         String email = authentication.getName();
+        System.out.println("email = "+email);
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
@@ -126,8 +127,14 @@ public class AuthController {
         user.setPassword(password);
         CreateUserRequestDTO createUserRequest = userMapper.fromUser_to_CreateUserRequestDTO(user);
         try {
-            authService.SignUp(createUserRequest);
+
+            UserDTO createdUser = authService.SignUp(createUserRequest);
+            userService.updateUser(new UserDTO(createdUser.id(),createdUser.firstName(),
+                    createdUser.lastName(),createdUser.email(),createdUser.phoneNumber(),createdUser.password(),
+                    userDTO.role(),userDTO.accountActivated()));
             emailService.sendPasswordEmail(createUserRequest.email(),password);
+
+            System.out.println("is account true: "+userDTO.accountActivated());
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch(EmailAlreadyExistsException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("email already exists");

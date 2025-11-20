@@ -104,10 +104,7 @@ spring:
           uri: http://localhost:8084
           predicates:
             - Path=/api/v1/user-subscription/**
-          filters:
-            - name: JwtAuthFilter
-              args:
-                roles: PASSENGER
+
 
         # Managing subscriptions (secured, manager)
         - id: managing-subscriptions

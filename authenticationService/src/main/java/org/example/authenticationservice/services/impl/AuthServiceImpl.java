@@ -27,8 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void SignUp(CreateUserRequestDTO createUserRequest) {
-        userService.createUser(createUserRequest, Role.PASSENGER);
+    public UserDTO SignUp(CreateUserRequestDTO createUserRequest) {
+        return userService.createUser(createUserRequest, Role.PASSENGER);
     }
 
     @Override
