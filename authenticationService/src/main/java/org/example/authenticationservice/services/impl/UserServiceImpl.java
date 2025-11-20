@@ -53,10 +53,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO){
-        User user = userMapper.fromUserDTO_to_User(userDTO);
-        return userMapper.fromUser_to_UserDTO(userRepo.save(user));
+    public UserDTO updateUser(UserDTO userDTO) {
+        User existingUser = userRepo.findById(userDTO.id())
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userDTO.id()));
+
+        existingUser.setFirstName(userDTO.firstName());
+        existingUser.setLastName(userDTO.lastName());
+        existingUser.setEmail(userDTO.email());
+        existingUser.setPhoneNumber(userDTO.phoneNumber());
+        existingUser.setRole(userDTO.role());
+        existingUser.setAccountActivated(userDTO.isAccountActivated());
+
+
+        User updatedUser = userRepo.save(existingUser);
+        return userMapper.fromUser_to_UserDTO(updatedUser);
     }
+
 
     @Override
     public List<UserDTO> getDrivers(){
