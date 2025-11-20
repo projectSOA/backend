@@ -1,6 +1,7 @@
 package org.example.authenticationservice.controller;
 
 import lombok.AllArgsConstructor;
+import org.example.authenticationservice.SecurityConfig.JwtService;
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
 import org.example.authenticationservice.dtos.LoginRequestDTO;
 import org.example.authenticationservice.dtos.UserDTO;
@@ -34,19 +35,21 @@ public class AuthController {
     private final UserService userService;
     private UserMapper userMapper;
     private EmailService emailService;
+    private final JwtService jwtService;
 
     private static final Integer PASSWORD_LENGTH = 6;
     private final SecureRandom random;
     private UserRepo userRepo;
 
     @Autowired
-    public AuthController(UserService userService, AuthService authService, UserMapper userMapper, EmailService emailService, UserRepo userRepo){
+    public AuthController(UserService userService, AuthService authService, UserMapper userMapper, EmailService emailService, UserRepo userRepo, JwtService jwtService){
         this.userService = userService;
         this.authService = authService;
         this.userMapper = userMapper;
         this.random = new SecureRandom();
         this.emailService = emailService;
         this.userRepo = userRepo;
+        this.jwtService= jwtService;
     }
     // we should add sign in and sign up , and creating user like driver only a manager can do that and an admin create a manager
 
@@ -153,6 +156,43 @@ public class AuthController {
         return ResponseEntity.ok(userService.getDrivers());
     }
 
+    @PostMapping("/validate-token")
+    public Boolean validateToken(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+
+        if (token == null || token.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return jwtService.validateToken(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @PostMapping("/validate-role")
+    public Boolean validateRole(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        String requiredRole = request.get("role");
+
+        if (token == null || token.isEmpty() || requiredRole == null || requiredRole.isEmpty()) {
+            return false;
+        }
+
+        try {
+            if (!jwtService.validateToken(token)) {
+                return false;
+            }
+
+            java.util.List<String> userRoles = jwtService.extractRoles(token);
+            return userRoles.contains(requiredRole);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
     @GetMapping("")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getUsers());
@@ -168,6 +208,8 @@ public class AuthController {
     public ResponseEntity<UserDTO> getUser(@PathVariable UUID userId){
         return  ResponseEntity.ok(userService.getUserById(userId));
     }
+
+
 
 
 
