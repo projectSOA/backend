@@ -11,7 +11,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:http://localhost:5137}")
     private String baseUrl;
 
     public EmailServiceImpl(JavaMailSender mailSender){
@@ -31,7 +31,7 @@ public class EmailServiceImpl implements EmailService {
             message.setTo(toEmail);
             message.setSubject("Confirm Your Email Address");
 
-            String confirmationUrl = baseUrl + "/api/v1/auth/confirm-email?token=" + confirmationToken;
+            String confirmationUrl = baseUrl + "/confirm-email?token=" + confirmationToken+"?email="+toEmail;
 
             message.setText("Hello,\n\n" +
                     "Thank you for registering. Please confirm your email address by clicking the link below:\n\n" +
