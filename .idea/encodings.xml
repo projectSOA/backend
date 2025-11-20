@@ -3,6 +3,9 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/GatewayService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/GeoLocationService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/TicketManagementService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/TripManagementService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/authenticationService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/subscription-service/src/main/java" charset="UTF-8" />
   </component>
 </project>

@@ -1,14 +1,11 @@
 package org.example.gatewayservice;
 
 import org.springframework.stereotype.Component;
-
-
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
-
 
 import java.util.Map;
 
@@ -18,6 +15,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     private final WebClient webClient;
 
     public JwtAuthFilter(WebClient.Builder webClientBuilder) {
+        super(JwtAuthFilter.Config.class);  // ← ADD THIS LINE
         this.webClient = webClientBuilder.baseUrl("http://localhost:8081")
                 .build();
     }
@@ -75,11 +73,17 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         };
     }
 
-
     public static class Config {
         private String role;
+
         public Config() {}
-        public String getRole() { return role; }
-        public void setRole(String role) { this.role = role; }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
     }
 }

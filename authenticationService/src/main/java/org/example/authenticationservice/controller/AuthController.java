@@ -70,6 +70,7 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody CreateUserRequestDTO createUserRequest) {
         try {
             authService.SignUp(createUserRequest);
+            emailService.sendConfirmationEmail(createUserRequest.email(),"token");
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch(EmailAlreadyExistsException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("email already exists");
@@ -108,16 +109,6 @@ public class AuthController {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID userId){
-        userService.deleteUser(userId);
-        return  ResponseEntity.ok("User deleted successfully");
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable UUID userId){
-        return  ResponseEntity.ok(userService.getUserById(userId));
-    }
 
     @PutMapping("/")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO){
@@ -166,6 +157,18 @@ public class AuthController {
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getUsers());
     }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable UUID userId){
+        userService.deleteUser(userId);
+        return  ResponseEntity.ok("User deleted successfully");
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable UUID userId){
+        return  ResponseEntity.ok(userService.getUserById(userId));
+    }
+
 
 
 }

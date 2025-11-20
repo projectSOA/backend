@@ -31,7 +31,7 @@ public class EmailServiceImpl implements EmailService {
             message.setTo(toEmail);
             message.setSubject("Confirm Your Email Address");
 
-            String confirmationUrl = baseUrl + "/confirm-email?token=" + confirmationToken+"?email="+toEmail;
+            String confirmationUrl = baseUrl + "/confirm-email?token=" + confirmationToken+"&email="+toEmail;
 
             message.setText("Hello,\n\n" +
                     "Thank you for registering. Please confirm your email address by clicking the link below:\n\n" +
