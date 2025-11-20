@@ -47,22 +47,32 @@ public class UserServiceImpl implements UserService {
         return userMapper.fromUser_to_UserDTO(user);
     }
 
+    @Override
     public void deleteUser(UUID userId){
         userRepo.deleteById(userId);
     }
 
+    @Override
     public UserDTO updateUser(UserDTO userDTO){
         User user = userMapper.fromUserDTO_to_User(userDTO);
         return userMapper.fromUser_to_UserDTO(userRepo.save(user));
     }
 
+    @Override
     public List<UserDTO> getDrivers(){
         List<User> users = userRepo.findAll().stream().filter((user)->user.getRole().name().equals("DRIVER")).collect(Collectors.toList());
         return userMapper.fromListUser_to_ListUserDTO(users);
     }
 
+    @Override
     public UserDTO getUserById(UUID userId){
         return userMapper.fromUser_to_UserDTO(userRepo.findUserById(userId));
+    }
+
+    @Override
+    public List<UserDTO> getUsers(){
+
+        return userMapper.fromListUser_to_ListUserDTO(userRepo.findAll());
     }
 
 }

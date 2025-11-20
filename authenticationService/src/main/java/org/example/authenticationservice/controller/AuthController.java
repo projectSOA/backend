@@ -162,5 +162,10 @@ public class AuthController {
         return ResponseEntity.ok(userService.getDrivers());
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        return ResponseEntity.ok(userService.getUsers());
+    }
+
 
 }

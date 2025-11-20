@@ -16,4 +16,5 @@ public interface UserService {
     UserDTO getUserById(UUID userId);
     UserDTO updateUser(UserDTO userDTO);
     List<UserDTO> getDrivers();
+    List<UserDTO> getUsers();
 }
