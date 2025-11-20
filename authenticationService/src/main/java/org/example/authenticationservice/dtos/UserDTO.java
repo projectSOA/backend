@@ -12,6 +12,6 @@ public record UserDTO(
         String phoneNumber,
         String password,
         Role role,
-        boolean isAccountActivated
+        boolean accountActivated
 ) {
 }

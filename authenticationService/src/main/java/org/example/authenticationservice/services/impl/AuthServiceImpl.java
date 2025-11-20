@@ -35,11 +35,11 @@ public class AuthServiceImpl implements AuthService {
     public String signIn(LoginRequestDTO loginRequest) {
         try{
             UserDTO user = userService.getUserByEmail(loginRequest.email());
-            System.out.println("account status: "+user.isAccountActivated());
+            System.out.println("account status: "+user.accountActivated());
             if (user == null) {
                 throw new BadCredentialsException("Invalid email or password");
             }
-            if (!user.isAccountActivated()) {
+            if (!user.accountActivated()) {
                 throw new AccountNotActivatedException("Account is not activated. Please check your email to activate your account.");
             }
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

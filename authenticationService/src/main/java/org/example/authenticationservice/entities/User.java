@@ -29,7 +29,8 @@ public class User {
 
     private String phoneNumber;
 
-    private boolean isAccountActivated ;
+    @Column(name = "is_account_activated")
+    private boolean accountActivated;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

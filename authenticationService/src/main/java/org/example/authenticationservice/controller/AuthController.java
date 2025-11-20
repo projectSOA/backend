@@ -78,12 +78,12 @@ public class AuthController {
 
     }
 
-    @PostMapping("/confirm-email")
+    @GetMapping("/confirm-email")
     public ResponseEntity<?> confirmEmail(@RequestParam("email") String email) {
         try {
             UserDTO user = userService.getUserByEmail(email);
 
-            if (user.isAccountActivated()) {
+            if (user.accountActivated()) {
                 return ResponseEntity.ok(Map.of("message", "Email already confirmed. You can log in now."));
             }
 

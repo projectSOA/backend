@@ -60,9 +60,11 @@ public class UserServiceImpl implements UserService {
         existingUser.setFirstName(userDTO.firstName());
         existingUser.setLastName(userDTO.lastName());
         existingUser.setEmail(userDTO.email());
+        System.out.println("account email: "+userDTO.email());
         existingUser.setPhoneNumber(userDTO.phoneNumber());
         existingUser.setRole(userDTO.role());
-        existingUser.setAccountActivated(userDTO.isAccountActivated());
+        System.out.println("account status: "+userDTO.accountActivated());
+        existingUser.setAccountActivated(userDTO.accountActivated());
 
 
         User updatedUser = userRepo.save(existingUser);
