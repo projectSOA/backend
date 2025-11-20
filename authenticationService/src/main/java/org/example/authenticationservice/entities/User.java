@@ -29,7 +29,7 @@ public class User {
 
     private String phoneNumber;
 
-    private boolean isAccountActivated = false;
+    private boolean isAccountActivated ;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

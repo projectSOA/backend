@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.authenticationservice.dtos.CreateUserRequestDTO;
 import org.example.authenticationservice.dtos.LoginRequestDTO;
 import org.example.authenticationservice.dtos.UserDTO;
+import org.example.authenticationservice.entities.Role;
 import org.example.authenticationservice.entities.User;
 import org.example.authenticationservice.exception.AccountNotActivatedException;
 import org.example.authenticationservice.exception.EmailAlreadyExistsException;
@@ -74,6 +75,31 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("email already exists");
         }
 
+    }
+
+    @PostMapping("/confirm-email")
+    public ResponseEntity<?> confirmEmail(@RequestParam("email") String email) {
+        try {
+            UserDTO user = userService.getUserByEmail(email);
+
+            if (user.isAccountActivated()) {
+                return ResponseEntity.ok(Map.of("message", "Email already confirmed. You can log in now."));
+            }
+
+
+            userService.updateUser(new UserDTO(user.id(),user.firstName(),
+                    user.lastName(),
+                    user.email(),
+                    user.phoneNumber(),
+                    user.password(),
+                    user.role(),
+            true));
+
+            return ResponseEntity.ok(Map.of("message", "Email confirmed successfully! You can now log in."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Unable to confirm email. User not found."));
+        }
     }
 
     @GetMapping("/me")

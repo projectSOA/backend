@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("Email already exists: " + createUserRequest.email());
         }
         User user = userMapper.fromCreateUserRequestDTO_to_User(createUserRequest);
+        user.setAccountActivated(false);
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
