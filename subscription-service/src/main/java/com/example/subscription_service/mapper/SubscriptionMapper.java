@@ -25,6 +25,7 @@ public class SubscriptionMapper {
                 subscription.getId(),
                 subscription.getTitle(),
                 subscription.getPlan(),
+                subscription.getStatus(),
                 subscription.getPrice(),
                 subscription.getTotalTickets(),
                 subscription.getValidityDays(),
