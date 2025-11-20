@@ -7,8 +7,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: trip
     ports:
-      - "5437:5432"
+      - "5438:5432"
     volumes:
-      - authentication_db:/var/lib/postgresql/data
+      - trip2_db:/var/lib/postgresql/data
 volumes:
-  authentication_db:
+  trip2_db:
