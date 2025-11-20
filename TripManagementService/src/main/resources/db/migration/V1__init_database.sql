@@ -1,9 +1,10 @@
--- mvn org.flywaydb:flyway-maven-plugin:11.15.0:repair -Dflyway.url=jdbc:postgresql://localhost:5437/trip -Dflyway.user=user -Dflyway.password=password
+-- mvn org.flywaydb:flyway-maven-plugin:11.15.0:repair -Dflyway.url=jdbc:postgresql://localhost:5438/trip -Dflyway.user=user -Dflyway.password=password
 
-DROP TABLE IF EXISTS route;
-DROP TABLE IF EXISTS stop;
+
 DROP TABLE IF EXISTS route_stop;
 DROP TABLE IF EXISTS bus;
+DROP TABLE IF EXISTS stop;
+DROP TABLE IF EXISTS route;
 
 -- Route table
 CREATE TABLE route (
@@ -33,8 +34,8 @@ CREATE TABLE route_stop (
         far_from_start NUMERIC(10,2),
         route_id UUID NOT NULL,
         stop_id UUID NOT NULL,
-        CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES route(id),
-        CONSTRAINT fk_stop FOREIGN KEY (stop_id) REFERENCES stop(id)
+        CONSTRAINT fk_route_stop_route FOREIGN KEY (route_id) REFERENCES route(id),
+        CONSTRAINT fk_route_stop_stop FOREIGN KEY (stop_id) REFERENCES stop(id)
 );
 
 -- Bus table
@@ -43,7 +44,8 @@ CREATE TABLE bus (
      registration_number VARCHAR(255) NOT NULL,
      start_time TIME,
      end_time TIME,
-     bus_status VARCHAR(50),
+     bus_status smallint,
      last_maintenance DATE,
-     CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES route(id),
+     route_id UUID NOT NULL,
+     CONSTRAINT fk_bus_route FOREIGN KEY (route_id) REFERENCES route(id)
 );
