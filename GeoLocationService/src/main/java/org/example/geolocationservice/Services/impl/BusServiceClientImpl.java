@@ -34,7 +34,7 @@ public class BusServiceClientImpl implements BusServiceClient {
     @Override
     public Mono<TrajectoryDTO> getTrajectoryById(UUID trajectoryId) {
         return webClient.get()
-                .uri("/api/v1/routes/{id}", trajectoryId)
+                .uri("/api/v1/routes/geo/{trajectoryId}", trajectoryId)
                 .retrieve()
                 .bodyToMono(TrajectoryDTO.class);
     }
