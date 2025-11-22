@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "tickets", indexes = {
         @Index(name = "idx_ticket_user", columnList = "user_id"),
-        @Index(name = "idx_ticket_route", columnList = "route_id"),
+        @Index(name = "idx_ticket_bus", columnList = "bus_id"),
         @Index(name = "idx_ticket_start_stop", columnList = "start_stop_id"),
         @Index(name = "idx_ticket_end_stop", columnList = "end_stop_id")
 })
@@ -31,8 +31,8 @@ public class Ticket {
     @Column(name = "user_id", columnDefinition = "uuid", nullable = false)
     private UUID userId;          // purchaser identifier
 
-    @Column(name = "route_id", columnDefinition = "uuid", nullable = false)
-    private UUID routeId;         // (Route Service)
+    @Column(name = "bus_id", columnDefinition = "uuid", nullable = false)
+    private UUID busId;         // (Route Service)
 
     @Column(name = "start_stop_id", columnDefinition = "uuid", nullable = false)
     private UUID startStopId;     // (Route Service)

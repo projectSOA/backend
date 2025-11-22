@@ -118,7 +118,7 @@ public class PaymentService {
         Long amountInCents = stripeService.convertToCents(request.getPrice());
         Map<String, String> metadata = new HashMap<>();
         metadata.put("user_id", request.getUserId().toString());
-        metadata.put("route_id", request.getRouteId().toString());
+        metadata.put("bus_id", request.getBusId().toString());
         metadata.put("purpose", "TICKET");
 
         String paymentMethodId = request.getPaymentMethodId();

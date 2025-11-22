@@ -18,7 +18,7 @@ public class TicketPdfGenerator {
                 --------------
                 Ticket ID   : %s
                 User ID     : %s
-                Route ID    : %s
+                Bus ID    : %s
                 From Stop   : %s
                 To Stop     : %s
                 Price       : %s
@@ -28,7 +28,7 @@ public class TicketPdfGenerator {
                 """.formatted(
                 ticket.getId(),
                 ticket.getUserId(),
-                ticket.getRouteId(),
+                ticket.getBusId(),
                 ticket.getStartStopId(),
                 ticket.getEndStopId(),
                 ticket.getPrice(),

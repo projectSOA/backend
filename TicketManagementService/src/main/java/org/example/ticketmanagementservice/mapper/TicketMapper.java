@@ -13,7 +13,7 @@ public interface TicketMapper {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "userId", source = "userId"),
-            @Mapping(target = "routeId", source = "routeId"),
+            @Mapping(target = "busId", source = "busId"),
             @Mapping(target = "startStopId", source = "startStopId"),
             @Mapping(target = "endStopId", source = "endStopId"),
             @Mapping(target = "price", source = "price"),

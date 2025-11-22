@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata2:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticket"]
       interval: 5s
@@ -33,4 +33,4 @@ services:
         condition: service_healthy
 
 volumes:
-  pgdata:
+  pgdata2:
