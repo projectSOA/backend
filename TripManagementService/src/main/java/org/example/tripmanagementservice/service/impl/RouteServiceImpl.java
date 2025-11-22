@@ -4,9 +4,11 @@ import org.example.tripmanagementservice.dto.route.RouteRequestDTO;
 import org.example.tripmanagementservice.entity.Bus;
 import org.example.tripmanagementservice.entity.Route;
 import org.example.tripmanagementservice.entity.RouteStop;
+import org.example.tripmanagementservice.entity.Stop;
 import org.example.tripmanagementservice.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.example.tripmanagementservice.mapper.RouteMapper;
+import org.example.tripmanagementservice.service.StopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.example.tripmanagementservice.repository.BusRepository;
@@ -16,6 +18,7 @@ import org.example.tripmanagementservice.service.RouteService;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,13 +28,15 @@ public class RouteServiceImpl implements RouteService {
     private final RouteMapper routeMapper;
     private final RouteStopRepository routeStopRepository;
     private final BusRepository busRepository;
+    private final StopService stopService;
 
     @Autowired
-    public RouteServiceImpl(RouteRepository routeRepository, RouteMapper routeMapper, RouteStopRepository routeStopRepository, BusRepository busRepository) {
+    public RouteServiceImpl(RouteRepository routeRepository, RouteMapper routeMapper, RouteStopRepository routeStopRepository, BusRepository busRepository, StopService stopService) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.routeStopRepository = routeStopRepository;
         this.busRepository = busRepository;
+        this.stopService = stopService;
     }
 
     public Route createRoute(Route route){
@@ -101,5 +106,18 @@ public class RouteServiceImpl implements RouteService {
         route.getBuses().remove(bus);
         bus.setRoute(null);
         return routeRepository.save(route);
+    }
+
+    public List<Route> getStopRoutes(UUID stopId){
+        Stop stop = stopService.getStop(stopId);
+        List<RouteStop> routeStops = stop.getRouteStops();
+        return routeStops.stream().map(RouteStop::getRoute).toList();
+    }
+
+    public List<Route> getTwoStopRoutes(UUID startStopId,UUID endStopId){
+        List<Route> routes1 = getStopRoutes(startStopId);
+        List<Route> routes2 = getStopRoutes(endStopId);
+        routes1.retainAll(routes2);
+        return routes1;
     }
 }

@@ -1,0 +1,381 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@example.com
+    name: Ticket Management Service
+  description: API for processing ticket purchases and subscription purchases using
+    Stripe
+  title: Ticket Management Payment API
+  version: 1.0.0
+servers:
+- description: Local development server
+  url: http://localhost:8080
+- description: Production server
+  url: https://api.example.com
+tags:
+- description: Payment processing operations
+  name: Payments
+paths:
+  /api/v1/payments/ticket-purchase:
+    post:
+      description: Process a payment for ticket purchase using Stripe API
+      operationId: processTicketPurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketPurchaseRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketPurchaseResponse'
+          description: Payment + Ticket returned successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad request - Invalid input data
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal server error - Payment processing failed
+      summary: Process ticket purchase payment
+      tags:
+      - Payments
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/v1/payments/subscription-purchase:
+    post:
+      description: Process a payment for subscription purchase using Stripe API
+      operationId: processSubscriptionPurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPurchaseRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+          description: Payment processed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad request - Invalid input data
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal server error - Payment processing failed
+      summary: Process subscription purchase payment
+      tags:
+      - Payments
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/v1/payments/{paymentId}:
+    get:
+      description: Retrieve payment details by payment ID
+      operationId: getPaymentById
+      parameters:
+      - description: Unique identifier of the payment
+        explode: false
+        in: path
+        name: paymentId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+          description: Payment found
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Payment not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal server error
+      summary: Get payment by ID
+      tags:
+      - Payments
+      x-accepts:
+      - application/json
+  /api/v1/payments/transaction/{transactionId}:
+    get:
+      description: Retrieve payment details by Stripe transaction ID
+      operationId: getPaymentByTransactionId
+      parameters:
+      - description: Stripe transaction ID
+        explode: false
+        in: path
+        name: transactionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+          description: Payment found
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Payment not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal server error
+      summary: Get payment by transaction ID
+      tags:
+      - Payments
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    TicketPurchaseRequest:
+      example:
+        endStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        routeId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        price: 0.8008281904610115
+        idempotencyKey: idempotencyKey
+        paymentMethodId: paymentMethodId
+        paymentMethod: CREDIT_CARD
+        startStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        userId:
+          format: uuid
+          type: string
+        routeId:
+          format: uuid
+          type: string
+        startStopId:
+          format: uuid
+          type: string
+        endStopId:
+          format: uuid
+          type: string
+        price:
+          format: decimal
+          type: number
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        idempotencyKey:
+          type: string
+        paymentMethodId:
+          type: string
+      required:
+      - endStopId
+      - paymentMethod
+      - price
+      - routeId
+      - startStopId
+      - userId
+      type: object
+    SubscriptionPurchaseRequest:
+      example:
+        method: CREDIT_CARD
+        price: 0.8008281904610115
+        idempotencyKey: idempotencyKey
+        paymentMethodId: paymentMethodId
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        userId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        price:
+          format: decimal
+          type: number
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        idempotencyKey:
+          type: string
+        paymentMethodId:
+          type: string
+      required:
+      - method
+      - price
+      - subscriptionId
+      - userId
+      type: object
+    PaymentResponse:
+      example:
+        method: CREDIT_CARD
+        price: 0.8008281904610115
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        paymentDate: 2000-01-23T04:56:07.000+00:00
+        userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        transactionId: transactionId
+        relatedId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: PENDING
+      properties:
+        id:
+          format: uuid
+          type: string
+        userId:
+          format: uuid
+          type: string
+        relatedId:
+          format: uuid
+          type: string
+        price:
+          format: decimal
+          type: number
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        transactionId:
+          type: string
+        paymentDate:
+          format: date-time
+          type: string
+      type: object
+    TicketPurchaseResponse:
+      example:
+        ticket:
+          endStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          purchaseDate: 2000-01-23T04:56:07.000+00:00
+          routeId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          qrCode: qrCode
+          price: 6.027456183070403
+          paymentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          startStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          expiresAt: 2000-01-23T04:56:07.000+00:00
+          validatedAt: 2000-01-23T04:56:07.000+00:00
+          status: status
+        payment:
+          method: CREDIT_CARD
+          price: 0.8008281904610115
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          paymentDate: 2000-01-23T04:56:07.000+00:00
+          userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          transactionId: transactionId
+          relatedId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          status: PENDING
+      properties:
+        payment:
+          $ref: '#/components/schemas/PaymentResponse'
+        ticket:
+          $ref: '#/components/schemas/TicketResponse'
+      type: object
+    TicketResponse:
+      example:
+        endStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        purchaseDate: 2000-01-23T04:56:07.000+00:00
+        routeId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        qrCode: qrCode
+        price: 6.027456183070403
+        paymentId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        startStopId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+        validatedAt: 2000-01-23T04:56:07.000+00:00
+        status: status
+      properties:
+        id:
+          format: uuid
+          type: string
+        userId:
+          format: uuid
+          type: string
+        routeId:
+          format: uuid
+          type: string
+        startStopId:
+          format: uuid
+          type: string
+        endStopId:
+          format: uuid
+          type: string
+        price:
+          type: number
+        status:
+          type: string
+        purchaseDate:
+          format: date-time
+          type: string
+        expiresAt:
+          format: date-time
+          type: string
+        validatedAt:
+          format: date-time
+          nullable: true
+          type: string
+        qrCode:
+          nullable: true
+          type: string
+        paymentId:
+          format: uuid
+          type: string
+      type: object
+    PaymentMethod:
+      enum:
+      - CREDIT_CARD
+      - DEBIT_CARD
+      - PAYPAL
+      - MOBILE_MONEY
+      type: string
+    PaymentStatus:
+      enum:
+      - PENDING
+      - COMPLETED
+      - FAILED
+      - REFUNDED
+      type: string
+    ErrorResponse:
+      example:
+        path: path
+        message: message
+        status: 1
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+        path:
+          type: string
+      required:
+      - message
+      - path
+      - status
+      type: object
+

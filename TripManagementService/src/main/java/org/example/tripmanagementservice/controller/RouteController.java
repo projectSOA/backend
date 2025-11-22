@@ -110,4 +110,5 @@ public class RouteController {
         List<RouteStop> routeStops = routeService.getRouteById(routeId).getRouteStops();
         return ResponseEntity.ok(routeStopMapper.toListResponseDTO(routeStops));
     }
+
 }
