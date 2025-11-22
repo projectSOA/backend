@@ -18,5 +18,7 @@ public interface RouteService {
     Route removeRouteStopFromRoute(UUID routeId, UUID routeStopId);
     Bus addBusToRoute(UUID routeId, Bus bus);
     Route removeBusFromRoute(UUID routeId, UUID busId);
+    List<Route> getStopRoutes(UUID stopId);
+    List<Route> getTwoStopRoutes(UUID startStopId,UUID endStopId);
 
 }
