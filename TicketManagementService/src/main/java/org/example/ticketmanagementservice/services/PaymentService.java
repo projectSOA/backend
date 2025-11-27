@@ -307,6 +307,9 @@ public class PaymentService {
             throw e;
         }
 
+        createUserSubscription(request.getUserId(),request.getSubscriptionId());
+
+
         return paymentMapper.toPaymentResponse(savedPayment);
     }
 

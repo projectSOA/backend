@@ -4,10 +4,7 @@ import org.example.tripmanagementservice.dto.bus.BusDetailsDTO;
 import org.example.tripmanagementservice.dto.bus.BusRequestDTO;
 import org.example.tripmanagementservice.dto.bus.BusResponseDTO;
 import org.example.tripmanagementservice.entity.Bus;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ public interface BusMapper {
 
     Bus toEntity(BusRequestDTO busRequestDTO);
 
+    @Mapping(target="routeId", source = "route.id")
     BusResponseDTO toResponseDTO(Bus bus);
 
     BusDetailsDTO toDetailsDTO(Bus bus);

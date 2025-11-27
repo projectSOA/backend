@@ -111,8 +111,11 @@ public class RouteServiceImpl implements RouteService {
     public List<Route> getStopRoutes(UUID stopId){
         Stop stop = stopService.getStop(stopId);
         List<RouteStop> routeStops = stop.getRouteStops();
-        return routeStops.stream().map(RouteStop::getRoute).toList();
+        return routeStops.stream()
+                .map(RouteStop::getRoute)
+                .collect(Collectors.toList());
     }
+
 
     public List<Route> getTwoStopRoutes(UUID startStopId,UUID endStopId){
         List<Route> routes1 = getStopRoutes(startStopId);

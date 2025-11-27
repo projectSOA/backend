@@ -106,7 +106,7 @@ spring:
         - id: ticket
           uri: http://localhost:8083
           predicates:
-            - Path=/api/v1/tickets/**
+            - Path=/api/v1/tickets/** , /api/v1/payments/**
 
         # User subscriptions (secured, passenger)
         - id: user-subscriptions
