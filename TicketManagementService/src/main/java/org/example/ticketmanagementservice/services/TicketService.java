@@ -21,6 +21,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
+import java.security.MessageDigest;
+
 
 @Service
 public class TicketService {
@@ -53,8 +55,9 @@ public class TicketService {
         UUID ticketId = tickett.getId();
 
         String qrCode = generateQrCode(ticketId);
-        ticket.setQrCode(qrCode);
-        ticket.setQrCodeGeneratedAt(LocalDateTime.now());
+        // Persist QR on the persisted entity (tickett) not on the original transient instance
+        tickett.setQrCode(qrCode);
+        tickett.setQrCodeGeneratedAt(LocalDateTime.now());
         return ticketRepository.save(tickett);
     }
 
@@ -79,7 +82,9 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket validateTicket(UUID ticketId) {
+    public Ticket validateTicket(String qrCode) {
+        UUID ticketId = getTicketIdFromQrCode(qrCode);
+
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + ticketId));
 
@@ -101,6 +106,50 @@ public class TicketService {
         ticket.setValidatedAt(LocalDateTime.now());
         return ticketRepository.save(ticket);
     }
+
+    private UUID getTicketIdFromQrCode(String qrCode) {
+        try {
+            // Step 1: Base64 decode
+            byte[] decodedBytes = Base64.getDecoder().decode(qrCode);
+            String combined = new String(decodedBytes, StandardCharsets.UTF_8);
+
+            // Expected format: "<ticketId>:<signature>"
+            String[] parts = combined.split(":", 2);
+            if (parts.length != 2) {
+                throw new TicketValidationException("Invalid QR code format");
+            }
+
+            String payload = parts[0];      // ticketId as string
+            String signature = parts[1];    // provided signature
+
+            // Step 2: Recalculate the signature and compare
+            String expectedSignature = signPayload(payload);
+
+            // Optional constant-time comparison
+            boolean matches = MessageDigest.isEqual(
+                    expectedSignature.getBytes(StandardCharsets.UTF_8),
+                    signature.getBytes(StandardCharsets.UTF_8)
+            );
+
+            if (!matches) {
+                throw new TicketValidationException("QR code is invalid or has been tampered with");
+            }
+
+            // Step 3: Parse UUID from payload
+            return UUID.fromString(payload);
+        } catch (IllegalArgumentException ex) {
+            // Base64 or UUID parsing issues
+            throw new TicketValidationException("Invalid QR code");
+        } catch (TicketValidationException ex) {
+            // Just rethrow our own exception type
+            throw ex;
+        } catch (Exception ex) {
+            // Any other unexpected problem
+            throw new TicketValidationException("Unable to read QR code");
+        }
+    }
+
+
 
     @Transactional
     public int expireTickets() {

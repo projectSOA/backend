@@ -164,7 +164,7 @@ components:
         - startStopId
         - endStopId
         - price
-        - paymentMethod
+        - method
       properties:
         userId:
           type: string
