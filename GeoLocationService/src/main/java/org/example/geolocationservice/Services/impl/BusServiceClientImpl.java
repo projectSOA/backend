@@ -3,6 +3,7 @@ package org.example.geolocationservice.Services.impl;
 import org.example.geolocationservice.Services.BusServiceClient;
 import org.example.geolocationservice.dtos.BusDTO;
 import org.example.geolocationservice.dtos.TrajectoryDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,9 +17,9 @@ public class BusServiceClientImpl implements BusServiceClient {
 
     private final WebClient webClient;
 
-    public BusServiceClientImpl() {
+    public BusServiceClientImpl(@Value("${trip-management-service.url}") String baseUrl) {
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8082")
+                .baseUrl(baseUrl)
                 .build();
     }
 

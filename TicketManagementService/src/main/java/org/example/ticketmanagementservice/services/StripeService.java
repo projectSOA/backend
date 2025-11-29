@@ -40,7 +40,7 @@ public class StripeService {
      * @param amountInCents Amount in cents
      * @param currency Currency code (e.g., "usd")
      * @param idempotencyKey Idempotency key for safe retries
-     * @param metadata Additional metadata
+     * @param metadata http://localhost:8080Additional metadata
      * @param paymentMethodId Optional payment method ID (pm_xxx) from Stripe
      * @return Created PaymentIntent
      * @throws StripeException if creation fails
