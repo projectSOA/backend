@@ -36,7 +36,7 @@ public class ValidateUserSubscriptionResponse {
                 "VALID",
                 remainingTickets,
                 expiryDate,
-                "Access granted. Welcome aboard!"
+                "Subscription is valid!"
         );
     }
 
