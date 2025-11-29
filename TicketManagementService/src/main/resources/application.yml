@@ -8,16 +8,15 @@ spring:
     activate:
       on-profile: dev
 
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticketdb
+    url: jdbc:postgresql://localhost:5435/ticket      # local dev, maps to host port
     username: ticket
     password: ticket
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update          # ✅ Hibernate auto-creates/updates tables for now
+      ddl-auto: update          # Hibernate auto-creates/updates tables
     show-sql: true              # optional: shows SQL in console
     properties:
       hibernate:
@@ -34,14 +33,14 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: trace
 
 ---
-# 🐳 Docker profile (if you ever run your app inside docker-compose)
+# 🐳 Docker profile
 spring:
   config:
     activate:
       on-profile: docker
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/ticketdb
+    url: jdbc:postgresql://ticket-db:5432/ticket      # Docker Compose service name
     username: ticket
     password: ticket
     driver-class-name: org.postgresql.Driver
@@ -54,6 +53,3 @@ spring:
       hibernate:
         format_sql: true
         jdbc.time_zone: UTC
-
-  # 🧩 Optional: if using Spring Boot 3.1+ Docker Compose integration
-

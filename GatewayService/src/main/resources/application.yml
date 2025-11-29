@@ -10,24 +10,24 @@ spring:
       routes:
         # Auth service
         - id: authentication
-          uri: http://localhost:8081
+          uri: http://authentication-service:8081
           predicates:
             - Path=/api/v1/auth/**
 
         # Bus service
         - id: buses
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/bus/**
 
         # Read routes
         - id: read-routes
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/routes,/api/v1/routes/{routeId}
 
         - id: manage-routes
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/routes,/api/v1/routes/{routeId},/api/v1/routes/{routeId}/stop
             - Method=POST,PUT
@@ -36,8 +36,8 @@ spring:
               args:
                 roles: MANAGER
 
-        - id: manage-routes
-          uri: http://localhost:8082
+        - id: manage-routes-stops
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/routes,/api/v1/routes/{routeId},/api/v1/routes/{routeId}/stops
             - Method=POST,GET
@@ -48,7 +48,7 @@ spring:
 
         # Add bus to route (secured)
         - id: add-bus-to-route
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/routes/{routeId}/add-bus
             - Method=POST
@@ -59,13 +59,13 @@ spring:
 
         # Read stops
         - id: read-stops
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/stops,/api/v1/stops/{stopId}
 
         # Add stop (secured)
         - id: add-stop
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/stops
             - Method=POST
@@ -76,7 +76,7 @@ spring:
 
         # Update stop (secured)
         - id: update-stop
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/stops/{stopId}
             - Method=PUT
@@ -87,13 +87,13 @@ spring:
 
         # Read route stops
         - id: read-route-stops
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/route-stops/{routeStopId}
 
         # Update route stop (secured)
         - id: update-route-stop
-          uri: http://localhost:8082
+          uri: http://trip-service:8082
           predicates:
             - Path=/api/v1/route-stops/{stopId}
             - Method=PUT
@@ -104,23 +104,21 @@ spring:
 
         # Ticket service
         - id: ticket
-          uri: http://localhost:8083
+          uri: http://ticket-service:8083
           predicates:
             - Path=/api/v1/tickets/** , /api/v1/payments/**
 
         # User subscriptions (secured, passenger)
         - id: user-subscriptions
-          uri: http://localhost:8084
+          uri: http://subscription-service:8084
           predicates:
             - Path=/api/v1/user-subscription/**
 
-
         # Managing subscriptions (secured, manager)
         - id: managing-subscriptions
-          uri: http://localhost:8084
+          uri: http://subscription-service:8084
           predicates:
             - Path=/api/v1/subscriptions/**
-
 
 logging:
   level:
