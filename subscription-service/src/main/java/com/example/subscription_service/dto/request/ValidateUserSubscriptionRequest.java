@@ -17,8 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ValidateUserSubscriptionRequest {
 
-    @NotNull(message = "User subscription ID is required")
-    private UUID userSubscriptionId;
-
-    private UUID userId;
+    @NotNull(message = "QR code is required")
+    private String qrCode;
 }
