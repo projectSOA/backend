@@ -44,6 +44,7 @@ public class PaymentService {
     private final EmailService emailService;
     private final TicketPdfGenerator ticketPdfGenerator;
     private final RestClient subscriptionServiceClient;
+    private final String AUTH_SERVICE_URL;
 
 
 
@@ -62,7 +63,8 @@ public class PaymentService {
             EmailService emailService,
             TicketPdfGenerator ticketPdfGenerator,
             TicketApiMapper ticketApiMapper,
-            @Qualifier("subscriptionServiceClient") RestClient subscriptionServiceClient) {
+            @Qualifier("subscriptionServiceClient") RestClient subscriptionServiceClient,
+            @Value("${auth-service.url}") String AUTh_SERVICE_URL)  {
         this.restTemplate = restTemplate;
         this.stripeService = stripeService;
         this.paymentRepository = paymentRepository;
@@ -74,7 +76,9 @@ public class PaymentService {
         this.emailService = emailService;
         this.ticketPdfGenerator = ticketPdfGenerator;
         this.subscriptionServiceClient = subscriptionServiceClient;
+        this.AUTH_SERVICE_URL = AUTh_SERVICE_URL;
     }
+
 
     /**
      * Process ticket purchase payment
@@ -176,7 +180,7 @@ public class PaymentService {
         // 6. FETCH USER FROM AUTH SERVICE + SEND PDF EMAIL (non-critical)
         // --------------------------------------------------------------------
         try {
-            String url = "http://localhost:8080/api/v1/auth/{userId}";
+            String url = AUTH_SERVICE_URL+ "api/v1/auth/{userId}";
 
             UserDTO user = restTemplate.getForObject(
                     url,
