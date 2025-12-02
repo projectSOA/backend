@@ -19,4 +19,5 @@ spec:
           image: auth-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8081
-          imagePullPolicy: Always
+          imagePullPolicy:  IfNotPresent
+

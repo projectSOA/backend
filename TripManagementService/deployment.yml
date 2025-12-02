@@ -19,4 +19,4 @@ spec:
           image: trip-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8082
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent

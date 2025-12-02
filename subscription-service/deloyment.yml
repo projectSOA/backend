@@ -19,4 +19,4 @@ spec:
           image: subscription-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8084
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent

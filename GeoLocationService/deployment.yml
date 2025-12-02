@@ -19,4 +19,4 @@ spec:
           image: geolocation-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8085
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent

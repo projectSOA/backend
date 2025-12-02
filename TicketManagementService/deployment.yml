@@ -19,4 +19,4 @@ spec:
           image: ticket-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8083
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent

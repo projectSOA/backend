@@ -19,4 +19,4 @@ spec:
           image: gateway-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8080
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
