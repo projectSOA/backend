@@ -2,9 +2,9 @@
 
 echo "Applying PostgreSQL StatefulSets and Services..."
 
-kubectl apply -f databases-statefulsets.yml
+kubectl apply -f deployment.yml
 
-kubectl apply -f databases-services.yml
+kubectl apply -f services.yml
 
 echo "All databases deployed successfully!"
 echo ""
