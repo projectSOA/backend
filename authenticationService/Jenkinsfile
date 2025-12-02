@@ -20,8 +20,7 @@ pipeline {
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t auth-service:\$IMAGE_TAG .
-                    minikube image load auth-service:\$IMAGE_TAG
-
+                    docker save auth-service:\$IMAGE_TAG | docker exec -i minikube docker load
                 """
             }
         }

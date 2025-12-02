@@ -1,17 +1,16 @@
 pipeline {
     agent any
 
-    when{
-            anyOf{
-                changeset "GeoLocationService/**"
-            }
+    when {
+        anyOf {
+            changeset "GeoLocationService/**"
         }
+    }
 
     environment {
         KUBECTL = "kubectl"
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
-
 
     stages {
         stage("Build Docker Image") {
@@ -20,8 +19,9 @@ pipeline {
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t geolocation-service:\$IMAGE_TAG .
-                    minikube image load geolocation-service:\$IMAGE_TAG
 
+                    # Save and load image into Minikube
+                    docker save geolocation-service:\$IMAGE_TAG | docker exec -i minikube docker load
                 """
             }
         }
@@ -32,7 +32,6 @@ pipeline {
                     sed "s/TAG_PLACEHOLDER/\$IMAGE_TAG/" deployment.yml > deployment-with-image.yml
                     \$KUBECTL apply -f deployment-with-image.yml
                     \$KUBECTL apply -f service.yml
-
                 """
             }
         }
