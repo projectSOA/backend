@@ -1,11 +1,7 @@
 pipeline {
     agent any
 
-    when {
-        anyOf {
-            changeset "GeoLocationService/**"
-        }
-    }
+
 
     environment {
         KUBECTL = "kubectl"

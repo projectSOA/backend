@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    when{
-            anyOf{
-                changeset "subscription-service/**"
-            }
-        }
-
     environment {
         KUBECTL = "kubectl"
         IMAGE_TAG = "${env.BUILD_NUMBER}"
