@@ -6,6 +6,8 @@ pipeline {
     environment {
         KUBECTL = "kubectl"
         IMAGE_TAG = "${env.BUILD_NUMBER}"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+
     }
 
 
