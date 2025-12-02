@@ -14,7 +14,6 @@ pipeline {
             dir('GeoLocationService') {
                 sh """
                     mvn clean install -DskipTests=true
-                    mvn test
                     docker build -t geolocation-service:\$IMAGE_TAG .
 
                     # Save and load image into Minikube

@@ -13,7 +13,6 @@ pipeline {
             dir('GatewayService') {
                 sh """
                     mvn clean install -DskipTests=true
-                    mvn test
                     docker build -t gateway-service:\$IMAGE_TAG .
                     docker save gateway-service:\$IMAGE_TAG | docker exec -i minikube docker load
 

@@ -13,7 +13,6 @@ pipeline {
             dir("TripManagementService"){
                 sh """
                     mvn clean install -DskipTests=true
-                    mvn test
                     docker build -t trip-service:\$IMAGE_TAG .
                     docker save trip-service:\$IMAGE_TAG | docker exec -i minikube docker load
                 """

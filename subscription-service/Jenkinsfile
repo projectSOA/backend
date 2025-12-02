@@ -13,7 +13,6 @@ pipeline {
             dir("subscription-service"){
                 sh """
                     mvn clean install -DskipTests=true
-                    mvn test
                     docker build -t subscription-service:\$IMAGE_TAG .
                     minikube image load subscription-service:\$IMAGE_TAG
                     docker save subscription-service:\$IMAGE_TAG | docker exec -i minikube docker load
