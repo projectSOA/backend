@@ -26,13 +26,16 @@ pipeline {
 
         stage("Deploy to Kubernetes") {
 
+
             steps {
+            dir("authenticationService"){
                 sh """
                     sed "s/TAG_PLACEHOLDER/\$IMAGE_TAG/" deployment.yml > deployment-with-image.yml
                     \$KUBECTL apply -f deployment-with-image.yml
                     \$KUBECTL apply -f service.yml
 
                 """
+                }
             }
         }
     }
