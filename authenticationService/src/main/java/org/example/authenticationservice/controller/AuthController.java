@@ -39,7 +39,7 @@ public class AuthController {
 
     private static final Integer PASSWORD_LENGTH = 6;
     private final SecureRandom random;
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
     @Autowired
     public AuthController(UserService userService, AuthService authService, UserMapper userMapper, EmailService emailService, UserRepo userRepo, JwtService jwtService){

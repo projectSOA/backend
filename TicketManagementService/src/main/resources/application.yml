@@ -10,8 +10,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5435/ticket      # local dev, maps to host port
-    username: ticket
-    password: ticket
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -41,8 +41,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://ticket-db:5432/ticket      # Docker Compose service name
-    username: ticket
-    password: ticket
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
 
   jpa:
