@@ -8,7 +8,6 @@ spring:
     gateway:
 
       routes:
-        # Auth service
         - id: authentication
           uri: http://authentication-service:8081
           predicates:
