@@ -19,4 +19,20 @@ spec:
           image: ticket-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8083
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ticket-secrets
+                  key: SECRET_KEY
+            - name: TICKET_QR_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ticket-secrets
+                  key: TICKET_QR_SECRET
+            - name: YOUR_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ticket-secrets
+                  key: YOUR_APP_PASSWORD
           imagePullPolicy: IfNotPresent

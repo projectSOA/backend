@@ -19,5 +19,21 @@ spec:
           image: auth-service:TAG_PLACEHOLDER
           ports:
             - containerPort: 8081
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secrets
+                  key: JWT_SECRET
+            - name: EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secrets
+                  key: EMAIL
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secrets
+                  key: EMAIL_PASSWORD
           imagePullPolicy:  IfNotPresent
 
