@@ -9,7 +9,7 @@ spring:
 
       routes:
         - id: authentication
-          uri: http://authentication-service:8081
+          uri: http://aut-service:8081
           predicates:
             - Path=/api/v1/auth/**
 
