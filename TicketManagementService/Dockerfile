@@ -14,9 +14,5 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-ENV USER_DB=user
-ENV PASSWORD_DB=password
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://ticket-db:5432/ticket
-
 EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "app.jar"]
