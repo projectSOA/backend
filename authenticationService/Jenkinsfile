@@ -1,11 +1,7 @@
 pipeline {
     agent any
 
-    when{
-            anyOf{
-                changeset "authenticationService/**"
-            }
-        }
+
 
     environment {
         KUBECTL = "kubectl"
@@ -14,7 +10,13 @@ pipeline {
 
 
     stages {
+
         stage("Build Docker Image") {
+        when {
+                        anyOf {
+                            changeset "**/authenticationService/**"
+                        }
+                    }
             steps {
                 sh """
                     mvn clean install -DskipTests=true
@@ -26,6 +28,11 @@ pipeline {
         }
 
         stage("Deploy to Kubernetes") {
+        when {
+                        anyOf {
+                            changeset "**/authenticationService/**"
+                        }
+                    }
             steps {
                 sh """
                     sed "s/TAG_PLACEHOLDER/\$IMAGE_TAG/" deployment.yml > deployment-with-image.yml
