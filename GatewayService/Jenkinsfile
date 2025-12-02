@@ -10,6 +10,7 @@ pipeline {
     stages {
         stage("Build Docker Image") {
             steps {
+            dir('GatewayService') {
                 sh """
                     mvn clean install -DskipTests=true
                     mvn test
@@ -17,6 +18,7 @@ pipeline {
                     docker save gateway-service:\$IMAGE_TAG | docker exec -i minikube docker load
 
                 """
+                }
             }
         }
 

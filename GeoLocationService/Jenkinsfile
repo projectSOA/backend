@@ -11,6 +11,7 @@ pipeline {
     stages {
         stage("Build Docker Image") {
             steps {
+            dir('GeoLocationService') {
                 sh """
                     mvn clean install -DskipTests=true
                     mvn test
@@ -19,6 +20,7 @@ pipeline {
                     # Save and load image into Minikube
                     docker save geolocation-service:\$IMAGE_TAG | docker exec -i minikube docker load
                 """
+                }
             }
         }
 

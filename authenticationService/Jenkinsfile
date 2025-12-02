@@ -14,12 +14,14 @@ pipeline {
         stage("Build Docker Image") {
 
             steps {
+            dir('authenticationService') {
                 sh """
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t auth-service:\$IMAGE_TAG .
                     docker save auth-service:\$IMAGE_TAG | docker exec -i minikube docker load
                 """
+                }
             }
         }
 
