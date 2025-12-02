@@ -1,0 +1,210 @@
+version: "3.9"
+
+networks:
+  microservices-net:
+
+volumes:
+  authentication_data:
+  subscription_data:
+  ticket_data:
+  trip_data:
+  geolocation_data:
+  frontend_node_modules:
+
+services:
+
+  # ------------------------------------
+  # FRONTEND (React + Vite)
+  # ------------------------------------
+  frontend:
+    container_name: frontend
+    build: ../frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - gateway-service
+    networks:
+      - microservices-net
+    volumes:
+      - ../frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+  # ------------------------------------
+  # API GATEWAY
+  # ------------------------------------
+  gateway-service:
+    build: ./GatewayService
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-net
+    depends_on:
+      - authentication-service
+      - subscription-service
+      - ticket-service
+      - trip-service
+      - geolocation-service
+
+  # ------------------------------------
+  # AUTHENTICATION SERVICE + DB
+  # ------------------------------------
+  authentication-db:
+    image: postgres:15
+    container_name: authentication-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authentication
+    ports:
+      - "5433:5432"
+    volumes:
+      - authentication_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  authentication-service:
+    build: ./authenticationService
+    container_name: authentication-service
+    environment:
+      USER_DB: ${USER_DB}
+      PASSWORD_DB: ${PASSWORD_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      EMAIL: ${EMAIL}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://authentication-db:5432/authentication
+    depends_on:
+      - authentication-db
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-net
+   
+  # ------------------------------------
+  # SUBSCRIPTION SERVICE + DB
+  # ------------------------------------
+  subscription-db:
+    image: postgres:15
+    container_name: subscription-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: subscription
+    ports:
+      - "5434:5432"
+    volumes:
+      - subscription_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  subscription-service:
+    build: ./subscription-service
+    container_name: subscription-service
+    environment:
+      USER_DB: user
+      PASSWORD_DB: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://subscription-db:5432/subscription
+    depends_on:
+      - subscription-db
+    ports:
+      - "8084:8084"
+    networks:
+      - microservices-net
+   
+
+  # ------------------------------------
+  # TICKET SERVICE + DB
+  # ------------------------------------
+  ticket-db:
+    image: postgres:15
+    container_name: ticket-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ticket
+    ports:
+      - "5435:5432"
+    volumes:
+      - ticket_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  ticket-service:
+    build: ./TicketManagementService
+    container_name: ticket-service
+    environment:
+      USER_DB: user
+      PASSWORD_DB: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ticket-db:5432/ticket
+      STRIPE_API_KEY: ${SECRET_KEY}
+      TICKET_QR_SECRET: ${TICKET_QR_SECRET}
+    depends_on:
+      - ticket-db
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-net
+   
+
+  # ------------------------------------
+  # TRIP SERVICE + DB
+  # ------------------------------------
+  trip-db:
+    image: postgres:15
+    container_name: trip-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: trip
+    ports:
+      - "5436:5432"
+    volumes:
+      - trip_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  trip-service:
+    build: ./TripManagementService
+    container_name: trip-service
+    environment:
+      USER_DB: user
+      PASSWORD_DB: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://trip-db:5432/trip
+    depends_on:
+      - trip-db
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-net
+   
+
+  # ------------------------------------
+  # GEOLOCATION SERVICE + DB
+  # ------------------------------------
+  geolocation-db:
+    image: postgres:15
+    container_name: geolocation-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: geolocation
+    ports:
+      - "5437:5432"
+    volumes:
+      - geolocation_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+
+  geolocation-service:
+    build: ./GeoLocationService
+    container_name: geolocation-service
+    environment:
+      USER_DB: user
+      PASSWORD_DB: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://geolocation-db:5432/geolocation
+    depends_on:
+      - geolocation-db
+    ports:
+      - "8085:8085"
+    networks:
+      - microservices-net
