@@ -9,7 +9,7 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:postgresql://localhost:5435/ticket      # local dev, maps to host port
+    url: jdbc:postgresql://ticket-db:5435/ticket      # local dev, maps to host port
     username: ticket
     password: ticket
     driver-class-name: org.postgresql.Driver
