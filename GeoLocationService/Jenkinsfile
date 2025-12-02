@@ -20,7 +20,7 @@ pipeline {
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t geolocation-service:\$IMAGE_TAG .
-                    minikube image load geolocation-service:BUILD_NUMBER
+                    minikube image load geolocation-service:\$IMAGE_TAG
 
                 """
             }

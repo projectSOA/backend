@@ -20,7 +20,7 @@ pipeline {
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t auth-service:\$IMAGE_TAG .
-                    minikube image load auth-service:BUILD_NUMBER
+                    minikube image load auth-service:\$IMAGE_TAG
 
                 """
             }

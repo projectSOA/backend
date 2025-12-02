@@ -20,7 +20,7 @@ pipeline {
                     mvn clean install -DskipTests=true
                     mvn test
                     docker build -t trip-service:\$IMAGE_TAG .
-                    minikube image load trip-service:BUILD_NUMBER
+                    minikube image load trip-service:\$IMAGE_TAG
 
                 """
             }
