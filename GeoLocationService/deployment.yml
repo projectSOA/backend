@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geolocation-service
+  labels:
+    app: geolocation-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geolocation-service
+  template:
+    metadata:
+      labels:
+        app: geolocation-service
+    spec:
+      containers:
+        - name: geolocation-service
+          image: geolocation-service:TAG_PLACEHOLDER
+          ports:
+            - containerPort: 8085
+          imagePullPolicy: Always

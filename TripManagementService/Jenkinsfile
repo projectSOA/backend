@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    when{
+            anyOf{
+                changeset "TripManagementService/**"
+            }
+        }
+
+    environment {
+        KUBECTL = "kubectl"
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+
+    stages {
+        stage("Build Docker Image") {
+            steps {
+                sh """
+                    mvn clean install -DskipTests=true
+                    mvn test
+                    docker build -t trip-service:\$IMAGE_TAG .
+                    minikube image load trip-service:BUILD_NUMBER
+
+                """
+            }
+        }
+
+        stage("Deploy to Kubernetes") {
+            steps {
+                sh """
+                    sed "s/TAG_PLACEHOLDER/\$IMAGE_TAG/" deployment.yml > deployment-with-image.yml
+                    \$KUBECTL apply -f deployment-with-image.yml
+                    \$KUBECTL apply -f service.yml
+
+                """
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-service
+  labels:
+    app: subscription-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscription-service
+  template:
+    metadata:
+      labels:
+        app: subscription-service
+    spec:
+      containers:
+        - name: subscription-service
+          image: subscription-service:TAG_PLACEHOLDER
+          ports:
+            - containerPort: 8084
+          imagePullPolicy: Always

@@ -1,0 +1,163 @@
+# ===== AUTH DB =====
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: authentication-db
+spec:
+  serviceName: authentication-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication-db
+  template:
+    metadata:
+      labels:
+        app: authentication-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5437
+          env:
+            - name: POSTGRES_DB
+              value: authentication
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+          volumeMounts:
+            - name: auth-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: auth-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: subscription-db
+spec:
+  serviceName: subscription-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscription-db
+  template:
+    metadata:
+      labels:
+        app: subscription-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5439
+          env:
+            - name: POSTGRES_DB
+              value: subscription
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+          volumeMounts:
+            - name: subscription-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: subscription-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ticket-db
+spec:
+  serviceName: ticket-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ticket-db
+  template:
+    metadata:
+      labels:
+        app: ticket-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5435
+          env:
+            - name: POSTGRES_DB
+              value: ticket
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+          volumeMounts:
+            - name: ticket-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: ticket-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: trip-db
+spec:
+  serviceName: trip-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trip-db
+  template:
+    metadata:
+      labels:
+        app: trip-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5438
+          env:
+            - name: POSTGRES_DB
+              value: trip
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+          volumeMounts:
+            - name: trip-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: trip-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
