@@ -32,7 +32,7 @@ public class UserSubscriptionController {
 
     // Validate a subscription (QR code)
     @PostMapping("/validate")
-    public ResponseEntity<ValidateUserSubscriptionResponse> validateSubscription(@RequestBody ValidateUserSubscriptionRequest request) {
+    public ResponseEntity<ValidateUserSubscriptionResponse> validateUserSubscription(@RequestBody ValidateUserSubscriptionRequest request) {
         return ResponseEntity.ok(userSubscriptionService.validateUserSubscription(request));
     }
 
