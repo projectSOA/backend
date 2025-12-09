@@ -3,6 +3,8 @@ package com.example.subscription_service.service;
 
 import com.example.subscription_service.dto.request.CreateUserSubscriptionRequest;
 import com.example.subscription_service.dto.request.ValidateUserSubscriptionRequest;
+import com.example.subscription_service.dto.response.MonthlySubscriptionCount;
+import com.example.subscription_service.dto.response.SubscriptionCountLastTwoMonths;
 import com.example.subscription_service.dto.response.UserSubscriptionResponse;
 import com.example.subscription_service.dto.response.ValidateUserSubscriptionResponse;
 import com.example.subscription_service.entity.Subscription;
@@ -27,7 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Base64;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -186,5 +189,50 @@ public class UserSubscriptionService {
         Result result = new MultiFormatReader().decode(bitmap);
         return result.getText();
     }
+
+    public List<Object[]> countSubscriptionsLastNYears(int years) {
+        LocalDate startDate = LocalDate.now().minusYears(years).withDayOfMonth(1);
+
+        return userSubscriptionRepository.countSubscriptionsByMonthSince(startDate);
+    }
+
+    public List<MonthlySubscriptionCount> getMonthlyStats(int years) {
+        List<Object[]> rows = countSubscriptionsLastNYears(years);
+        HashMap<Integer,Long> cnt = new HashMap<Integer,Long>();
+
+        for (Object[] row : rows) {
+            Integer month = (Integer) row[1];
+            Long count = (Long) row[2];
+
+            cnt.put(month, cnt.getOrDefault(month, 0L) + count);
+        }
+        return cnt.entrySet().stream()
+                .map(entry -> new MonthlySubscriptionCount(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(MonthlySubscriptionCount::month))
+                .toList();
+    }
+
+    @Transactional
+    public SubscriptionCountLastTwoMonths getSubscriptionComparisonLastTwoMonths() {
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate startOfThisMonth = today.withDayOfMonth(1);
+        LocalDate startOfNextMonth = startOfThisMonth.plusMonths(1);
+
+        long thisMonthCount = userSubscriptionRepository.countBetween(
+                startOfThisMonth, startOfNextMonth
+        );
+
+        LocalDate startOfLastMonth = startOfThisMonth.minusMonths(1);
+
+        long lastMonthCount = userSubscriptionRepository.countBetween(
+                startOfLastMonth, startOfThisMonth
+        );
+
+        return new SubscriptionCountLastTwoMonths(thisMonthCount, lastMonthCount);
+    }
+
+
 
 }
