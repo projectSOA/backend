@@ -50,16 +50,13 @@ WHERE YEAR(us.startDate) = YEAR(CURRENT_DATE - 1 MONTH)
     long countSubscriptionsLastMonth();
 
     @Query("""
-SELECT 
-  YEAR(us.startDate) AS yr,
-  MONTH(us.startDate) AS mn,
-  COUNT(us) AS total
+SELECT COUNT(us)
 FROM UserSubscription us
-WHERE us.startDate >= :startDate
-GROUP BY YEAR(us.startDate), MONTH(us.startDate)
-ORDER BY yr DESC, mn DESC
+WHERE us.startDate >= :start
+  AND us.startDate < :end
 """)
-    List<Object[]> countSubscriptionsByMonthSince(@Param("startDate") LocalDate startDate);
+    long countSubscriptionsBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
 
     @Query("""
 SELECT COUNT(us) 
