@@ -33,4 +33,41 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
             "AND us.startDate <= :date AND us.endDate >= :date")
     Optional<UserSubscription> findActiveSubscriptionByDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
+    @Query("""
+SELECT COUNT(us) 
+FROM UserSubscription us
+WHERE YEAR(us.startDate) = YEAR(CURRENT_DATE)
+  AND MONTH(us.startDate) = MONTH(CURRENT_DATE)
+""")
+    long countSubscriptionsThisMonth();
+
+    @Query("""
+SELECT COUNT(us) 
+FROM UserSubscription us
+WHERE YEAR(us.startDate) = YEAR(CURRENT_DATE - 1 MONTH)
+  AND MONTH(us.startDate) = MONTH(CURRENT_DATE - 1 MONTH)
+""")
+    long countSubscriptionsLastMonth();
+
+    @Query("""
+SELECT 
+  YEAR(us.startDate) AS yr,
+  MONTH(us.startDate) AS mn,
+  COUNT(us) AS total
+FROM UserSubscription us
+WHERE us.startDate >= :startDate
+GROUP BY YEAR(us.startDate), MONTH(us.startDate)
+ORDER BY YEAR(us.startDate) DESC, MONTH(us.startDate) DESC
+""")
+    List<Object[]> countSubscriptionsByMonthSince(@Param("startDate") LocalDate startDate);
+
+
+    @Query("""
+SELECT COUNT(us) 
+FROM UserSubscription us
+WHERE us.startDate >= :start AND us.startDate < :end
+""")
+    long countBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+
 }
