@@ -24,8 +24,6 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     Optional<Ticket> findByPaymentId(UUID paymentId);
 
 
-    @Query(value = "select t from Ticket  t where MONTH(t.createdAt)=:month And year(t.createdAt)=:year")
-    List<Ticket> fetchTicketsSoldInAMonthInAYear(@Param("month") int month, @Param("year") int year);
 
     @Query("SELECT t FROM Ticket t WHERE t.createdAt >= :start AND t.createdAt < :end")
     List<Ticket> fetchTicketsBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);

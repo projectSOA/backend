@@ -188,6 +188,7 @@ public class TicketService {
         return new TicketCountInLastTwoMonths(ticketsSoldThisMonth.size(),ticketsSoldLastMonth.size());
     }
 
+    @Transactional
     public List<NumberOfTicketSoldInADay> getNumberOfTicketSoldOverPeriodOfTimeByDay(LocalDateTime start, LocalDateTime end){
         List<Object[]> numberOfTicketsSoldPerDayOfTheWeek = ticketRepository.fetchTicketsCountByDayBetweenStartAndEnd(start,end);
         List<NumberOfTicketSoldInADay> res = IntStream.rangeClosed(1, 7)                       // 1..7
