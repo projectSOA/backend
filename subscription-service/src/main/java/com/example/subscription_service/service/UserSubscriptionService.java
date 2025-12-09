@@ -1,6 +1,5 @@
 package com.example.subscription_service.service;
 
-
 import com.example.subscription_service.dto.request.CreateUserSubscriptionRequest;
 import com.example.subscription_service.dto.request.ValidateUserSubscriptionRequest;
 import com.example.subscription_service.dto.response.MonthlySubscriptionCount;
@@ -29,11 +28,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 public class UserSubscriptionService {
@@ -46,6 +43,7 @@ public class UserSubscriptionService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
+    @Transactional
     public UserSubscriptionResponse createUserSubscription(CreateUserSubscriptionRequest request) {
         Subscription sub = subscriptionRepository.findById(request.getSubscriptionId())
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
@@ -57,7 +55,7 @@ public class UserSubscriptionService {
         us.setStartDate(LocalDate.now());
         us.setEndDate(LocalDate.now().plusDays(sub.getValidityDays()));
         us.setNumberTicketsLeft(sub.getTotalTickets());
-        us.setQrCode(generateQrCode()); // implement this method
+
         userSubscriptionRepository.save(us);
 
         // Generate QR code using the UUID directly
@@ -70,7 +68,16 @@ public class UserSubscriptionService {
     }
 
     public ValidateUserSubscriptionResponse validateUserSubscription(ValidateUserSubscriptionRequest request) {
-        UserSubscription us = userSubscriptionRepository.findByUserId(request.getUserId())
+        // Decode QR code to get the subscription ID
+        UUID userSubscriptionId;
+        try {
+            String decodedText = decodeQrCode(request.getQrCode());
+            userSubscriptionId = UUID.fromString(decodedText);
+        } catch (Exception e) {
+            return ValidateUserSubscriptionResponse.denied("INVALID_QR", "QR code is invalid");
+        }
+
+        UserSubscription us = userSubscriptionRepository.findById(userSubscriptionId)
                 .orElseThrow(() -> new RuntimeException("User subscription not found"));
 
         if (us.getStatus() != UserSubscriptionStatus.ACTIVE) {
