@@ -20,4 +20,10 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     List<Ticket> findByStatusAndExpiresAtBefore(TicketStatus status, LocalDateTime threshold);
 
     Optional<Ticket> findByPaymentId(UUID paymentId);
+
+    @Query("SELECT t FROM Ticket t WHERE t.createdAt >= :start AND t.createdAt < :end")
+    List<Ticket> fetchTicketsBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("Select count(t), FUNCTION('DAYOFWEEK', t.createdAt) from Ticket  t where t.createdAt>=:start and t.createdAt<:end group by FUNCTION('DAYOFWEEK', t.createdAt) order by FUNCTION('DAYOFWEEK', t.createdAt)")
+    List<Object[]> fetchTicketsCountByDayBetweenStartAndEnd(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
