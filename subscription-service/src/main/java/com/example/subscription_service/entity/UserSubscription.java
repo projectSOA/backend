@@ -40,7 +40,7 @@ public class UserSubscription {
     @Column(name = "number_tickets_left", nullable = false)
     private Integer numberTicketsLeft;
 
-    @Column(name = "qr_code", nullable = false)
+    @Column(name = "qr_code")
     private String qrCode;
 
     @Column(name = "last_used")
