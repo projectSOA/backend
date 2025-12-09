@@ -43,5 +43,17 @@ public class TicketController {
         ticketService.validateTicket(qrcode.qrcode());
         return ResponseEntity.ok("ticket is valid");
     }
+
+    @GetMapping("/stats/tickets-sold-per-day")
+    public ResponseEntity<?> getNumberOfTicketsSoldPerDay() {
+
+        return ResponseEntity.ok(ticketService.getTicketsSoldPerDayForLastSixMonths());
+    }
+
+    @GetMapping("/stats/tickets-sold-last-two-months")
+    public ResponseEntity<?> getNumberOfTicketsSoldInLastTwoMonths() {
+
+        return ResponseEntity.ok(ticketService.getTicketsSoldThisMonthComparedToLastMonth());
+    }
 }
 
