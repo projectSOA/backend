@@ -1,6 +1,8 @@
 package org.example.ticketmanagementservice.services;
 
 import org.example.ticketmanagementservice.api.model.TicketPurchaseRequest;
+import org.example.ticketmanagementservice.dto.NumberOfTicketSoldInADay;
+import org.example.ticketmanagementservice.dto.TicketCountInLastTwoMonths;
 import org.example.ticketmanagementservice.entities.Payment;
 import org.example.ticketmanagementservice.entities.Ticket;
 import org.example.ticketmanagementservice.entities.enums.TicketStatus;
@@ -17,11 +19,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
 import java.security.MessageDigest;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -165,6 +169,51 @@ public class TicketService {
         return ticketRepository.findByPaymentId(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found for payment id: " + paymentId));
     }
+
+
+    @Transactional
+    public TicketCountInLastTwoMonths getTicketsSoldThisMonthComparedToLastMonth() {
+        LocalDate now = LocalDate.now();
+
+        LocalDateTime startOfThisMonth = now.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime startOfNextMonth = startOfThisMonth.plusMonths(1);
+        List<Ticket> ticketsSoldThisMonth =
+                ticketRepository.fetchTicketsBetween(startOfThisMonth, startOfNextMonth);
+
+        LocalDateTime startOfLastMonth = startOfThisMonth.minusMonths(1);
+        LocalDateTime startOfThisMonthCopy = startOfThisMonth;
+        List<Ticket> ticketsSoldLastMonth =
+                ticketRepository.fetchTicketsBetween(startOfLastMonth, startOfThisMonthCopy);
+
+        return new TicketCountInLastTwoMonths(ticketsSoldThisMonth.size(),ticketsSoldLastMonth.size());
+    }
+
+    public List<NumberOfTicketSoldInADay> getNumberOfTicketSoldOverPeriodOfTimeByDay(LocalDateTime start, LocalDateTime end){
+        List<Object[]> numberOfTicketsSoldPerDayOfTheWeek = ticketRepository.fetchTicketsCountByDayBetweenStartAndEnd(start,end);
+        List<NumberOfTicketSoldInADay> res = IntStream.rangeClosed(1, 7)                       // 1..7
+                .mapToObj(i -> new NumberOfTicketSoldInADay(i, 0L))
+                .collect(Collectors.toList());
+        for(Object[] row: numberOfTicketsSoldPerDayOfTheWeek){
+            Integer dayOfWeek = (Integer) row[1];
+            Long count = (Long) row[0];
+
+            res.set(dayOfWeek - 1, new NumberOfTicketSoldInADay(dayOfWeek, count));
+        }
+
+        return res;
+    }
+
+    @Transactional
+    public List<NumberOfTicketSoldInADay> getTicketsSoldPerDayForLastSixMonths() {
+        LocalDateTime end = LocalDateTime.now(); // now
+        LocalDateTime start = end.minusMonths(6).withDayOfMonth(1).toLocalDate().atStartOfDay();
+
+        List<NumberOfTicketSoldInADay> ticketsPerDay = getNumberOfTicketSoldOverPeriodOfTimeByDay(start, end);
+
+        return ticketsPerDay;
+    }
+
+
 
     private String generateQrCode(UUID ticketId) {
         String payload = ticketId.toString();
