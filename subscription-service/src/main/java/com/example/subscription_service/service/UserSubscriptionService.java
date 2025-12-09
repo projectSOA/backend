@@ -1,5 +1,6 @@
 package com.example.subscription_service.service;
 
+
 import com.example.subscription_service.dto.request.CreateUserSubscriptionRequest;
 import com.example.subscription_service.dto.request.ValidateUserSubscriptionRequest;
 import com.example.subscription_service.dto.response.UserSubscriptionResponse;
@@ -11,11 +12,22 @@ import com.example.subscription_service.enums.UserSubscriptionStatus;
 import com.example.subscription_service.mapper.UserSubscriptionMapper;
 import com.example.subscription_service.repository.SubscriptionRepository;
 import com.example.subscription_service.repository.UserSubscriptionRepository;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,6 +55,12 @@ public class UserSubscriptionService {
         us.setEndDate(LocalDate.now().plusDays(sub.getValidityDays()));
         us.setNumberTicketsLeft(sub.getTotalTickets());
         us.setQrCode(generateQrCode()); // implement this method
+        userSubscriptionRepository.save(us);
+
+        // Generate QR code using the UUID directly
+        String qrBase64 = generateQrCode(us.getId());
+
+        us.setQrCode(qrBase64);
         userSubscriptionRepository.save(us);
 
         return UserSubscriptionMapper.toResponse(us);
@@ -132,9 +150,41 @@ public class UserSubscriptionService {
 
 
 
-    private String generateQrCode() {
-        // placeholder for QR code generation logic
-        return UUID.randomUUID().toString();
+    private String generateQrCode(UUID uuid) {
+        try {
+            String content = uuid.toString();
+
+            int width = 300;
+            int height = 300;
+
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height);
+
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    image.setRGB(x, y, bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+                }
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            byte[] pngData = baos.toByteArray();
+
+            return Base64.getEncoder().encodeToString(pngData);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate QR Code", e);
+        }
+    }
+
+    private String decodeQrCode(String base64Qr) throws IOException, NotFoundException {
+        byte[] bytes = Base64.getDecoder().decode(base64Qr);
+        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(bytes));
+        LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+        Result result = new MultiFormatReader().decode(bitmap);
+        return result.getText();
     }
 
 }
