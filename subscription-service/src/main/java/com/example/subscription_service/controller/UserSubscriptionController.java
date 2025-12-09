@@ -76,8 +76,8 @@ public class UserSubscriptionController {
     }
 
     @GetMapping("/stats/monthly/{years}")
-    public ResponseEntity<?> getMonthlySubscriptions(@PathVariable int years) {
-        return ResponseEntity.ok(userSubscriptionService.countSubscriptionsLastNYears(years)) ;
+    public ResponseEntity<List<MonthlySubscriptionCount>> getMonthlySubscriptions(@PathVariable int years) {
+        return ResponseEntity.ok(userSubscriptionService.getMonthlyStats(years)) ;
     }
 
 
