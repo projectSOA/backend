@@ -2,6 +2,7 @@ package com.example.subscription_service.controller;
 
 import com.example.subscription_service.dto.request.CreateUserSubscriptionRequest;
 import com.example.subscription_service.dto.request.ValidateUserSubscriptionRequest;
+import com.example.subscription_service.dto.response.SubscriptionCountLastTwoMonths;
 import com.example.subscription_service.dto.response.UserSubscriptionResponse;
 import com.example.subscription_service.dto.response.ValidateUserSubscriptionResponse;
 import com.example.subscription_service.enums.UserSubscriptionStatus;
@@ -32,7 +33,7 @@ public class UserSubscriptionController {
 
     // Validate a subscription (QR code)
     @PostMapping("/validate")
-    public ResponseEntity<ValidateUserSubscriptionResponse> validateSubscription(@RequestBody ValidateUserSubscriptionRequest request) {
+    public ResponseEntity<ValidateUserSubscriptionResponse> validateUserSubscription(@RequestBody ValidateUserSubscriptionRequest request) {
         return ResponseEntity.ok(userSubscriptionService.validateUserSubscription(request));
     }
 
@@ -68,4 +69,16 @@ public class UserSubscriptionController {
     public ResponseEntity<List<UserSubscriptionResponse>> getUserSubscriptions(@PathVariable UUID userId) {
         return ResponseEntity.ok(userSubscriptionService.getUserSubscriptions(userId));
     }
+
+    @GetMapping("/stats/compare-last-two-months")
+    public SubscriptionCountLastTwoMonths compareLastTwoMonths() {
+        return userSubscriptionService.getSubscriptionComparisonLastTwoMonths();
+    }
+
+    @GetMapping("/stats/monthly/{years}")
+    public ResponseEntity<?> getMonthlySubscriptions(@PathVariable int years) {
+        return ResponseEntity.ok(userSubscriptionService.countSubscriptionsLastNYears(years)) ;
+    }
+
+
 }
